@@ -3,8 +3,7 @@ CS3560.01, Group 6
 The Main driver for the Patient Scheduling Software.
 
 '''
-
-import classes
+from classes import *
 import sys
 
 def main():
