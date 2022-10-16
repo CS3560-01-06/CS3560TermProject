@@ -1,9 +1,7 @@
-import Visit
-
 class VisitLog():
     '''
-    A VisitLog is used to track the number of times a certain Patient has visited the hospital
-    It consists of a simple array of Visits, which can be appended to, but not deleted.
+    A VisitLog is used to track the incoming visits that a Patient has for the hospital in the future.
+    It consists of a simple array of Visits, which can be modified using the given methods.
     '''
     def __init__(self, log=None):
         self.log = log if log != None else []
@@ -11,17 +9,33 @@ class VisitLog():
     def __len__(self):
         return len(self.log)
 
-    def append(self, visit: Visit.Visit):
+    def append(self, visit):
         self.log.append(visit)
     
     def append(self, date, time, description):
-        self.log.append(Visit.Visit(date, time, description))
+        self.log.append(Visit(date, time, description))
     
     def get_visit(self, index):
         if 0 <= index <= len(self.log):
             return str(self.log[index])
         else:
             raise IndexError(f"Index {index} out of bounds.")
+    
+    def return_visits(self):
+        return self.log
+    
+    def search_visits(self, **kwargs):
+        results = []
+        if kwargs.get("ID", False):
+            results += ([visit for visit in self.log if visit.id == kwargs.get("ID")])
+        if kwargs.get("Date", False):
+            results += ([visit for visit in self.log if visit.date == kwargs.get("Date")])
+        if kwargs.get("Time", False):
+            results += ([visit for visit in self.log if visit.time == kwargs.get("Time")])
+        if kwargs.get("Desc", False):
+            results += ([visit for visit in self.log if visit.desc == kwargs.get("Desc")])
+        return results
+
 
 class Visit():
     '''
