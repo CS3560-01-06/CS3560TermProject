@@ -6,3 +6,6 @@ class Patient(Account):
         self.patientID = patientID # int
         self.status = status # boolean
         self.insuranceType = insuranceType # string
+
+    def pastVisits():
+        return

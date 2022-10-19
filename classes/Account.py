@@ -10,3 +10,5 @@ class Account:
         self.password = password # string
         self.emailAddress = emailAddress # string
 
+    def login():
+        return
