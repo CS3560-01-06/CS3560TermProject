@@ -27,8 +27,17 @@ class Patient:
     def __repr__(self):
         return f"<Patient Object of ID {self.id}, Parameters(\"{self.name}\", \"{self.age}\")>"
 
-    def get_log(self):
-        return self.log
-    
-    def record_visit(self, ):
-        self.log.append()
+    def RemoveScheduledVisit(self):
+        pass
+    def ScheduleVisit(self):
+        pass
+    def ViewUpcomingVisits(self):
+        return self.log.return_visits()
+    def SearchSpecialty(self):
+        pass
+    def SearchDoctor(self):
+        pass
+    def SearchAvailability(self):
+        pass
+
+
