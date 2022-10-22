@@ -28,15 +28,11 @@ class VisitLog():
         return self.log
     
     def search_visits(self, **kwargs):
-        results = []
-        if kwargs.get("ID", False):
-            results += ([visit for visit in self.log if visit.id == kwargs.get("ID")])
-        if kwargs.get("Date", False):
-            results += ([visit for visit in self.log if visit.date == kwargs.get("Date")])
-        if kwargs.get("Time", False):
-            results += ([visit for visit in self.log if visit.time == kwargs.get("Time")])
-        if kwargs.get("Desc", False):
-            results += ([visit for visit in self.log if visit.desc == kwargs.get("Desc")])
+        results = set([])
+        results += [(ind, visit) for ind, visit in enumerate(self.log) if visit.id == kwargs.get("ID")]
+        results += [(ind, visit) for ind, visit in enumerate(self.log) if visit.date == kwargs.get("Date")]
+        results += [(ind, visit) for ind, visit in enumerate(self.log) if visit.time == kwargs.get("Time")]
+        results += [(ind, visit) for ind, visit in enumerate(self.log) if visit.desc == kwargs.get("Desc")]    
         return results
 
 

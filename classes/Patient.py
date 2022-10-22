@@ -28,16 +28,44 @@ class Patient:
         return f"<Patient Object of ID {self.id}, Parameters(\"{self.name}\", \"{self.age}\")>"
 
     def RemoveScheduledVisit(self):
+        '''
+        Input(s): Given visit search parameters
+        Output(s): Success value
+        Description: find all visits that match all given parameters, returning a value if none are found. If any are found, 
+        '''
         pass
+
     def ScheduleVisit(self):
+        '''
+        Input(s): Given visit search parameters
+        Output(s): Success value
+        '''
         pass
+
     def ViewUpcomingVisits(self):
+        '''
+        Input(s): Given visit search parameters
+        Output(s): Success value
+        '''
         return self.log.return_visits()
+    
     def SearchSpecialty(self):
+        '''
+        Input(s): Given visit search parameters
+        Output(s): Success value
+        '''
         pass
+
     def SearchDoctor(self):
+        '''
+        Input(s): Given visit search parameters
+        Output(s): Success value
+        '''
         pass
+
     def SearchAvailability(self):
+        '''
+        Input(s): Given visit search parameters
+        Output(s): Success value
+        '''
         pass
-
-
