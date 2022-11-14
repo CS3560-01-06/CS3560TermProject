@@ -3,20 +3,30 @@ class VisitLog():
     A VisitLog is used to track the incoming visits that a Patient has for the hospital in the future.
     It consists of a simple array of Visits, which can be modified and indexed using the given methods.
     '''
-    def __init__(self, log=None):
+    def __init__(self, log=None, max=None):
         self.log = log if log != None else []
+        self.max = max if max != None else 1000
     
     def __len__(self):
         return len(self.log)
 
     def append(self, visit):
-        self.log.append(visit)
+        if self.log.__len__ < max:
+           self.log.append(visit)
+           return True
+        return False
     
-    def append(self, date, time, description):
-        self.log.append(Visit(date, time, description))
-    
+    def append(self, date, time, description) -> bool:
+        if self.log.__len__ < max:
+            self.log.append(Visit(date, time, description))
+            return True
+        return False
+        
     def remove(self, index: int):
+        if self.log.__len__ <= index:
+            return False
         self.log.pop(index)
+        return True
     
     def get_visit(self, index):
         if 0 <= index <= len(self.log):

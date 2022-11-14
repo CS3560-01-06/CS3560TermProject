@@ -27,20 +27,20 @@ class Patient:
     def __repr__(self):
         return f"<Patient Object of ID {self.id}, Parameters(\"{self.name}\", \"{self.age}\")>"
 
-    def RemoveScheduledVisit(self):
+    def RemoveScheduledVisit(self, index):
         '''
         Input(s): Given visit search parameters
         Output(s): Success value
         Description: find all visits that match all given parameters, returning a value if none are found. If any are found, 
         '''
-        pass
+        return self.log.remove(index)
 
-    def ScheduleVisit(self):
+    def ScheduleVisit(self, date: str, time: str, desc: str):
         '''
         Input(s): Given visit search parameters
         Output(s): Success value
         '''
-        pass
+        return self.log.append(date, time, desc)
 
     def ViewUpcomingVisits(self):
         '''
@@ -49,23 +49,23 @@ class Patient:
         '''
         return self.log.return_visits()
     
-    def SearchSpecialty(self):
-        '''
-        Input(s): Given visit search parameters
-        Output(s): Success value
-        '''
-        pass
-
-    def SearchDoctor(self):
-        '''
-        Input(s): Given visit search parameters
-        Output(s): Success value
-        '''
-        pass
-
-    def SearchAvailability(self):
-        '''
-        Input(s): Given visit search parameters
-        Output(s): Success value
-        '''
-        pass
+    #def SearchSpecialty(self):
+    #    '''
+    #    Input(s): Given visit search parameters
+    #    Output(s): Success value
+    #    '''
+    #    pass
+#
+    #def SearchDoctor(self):
+    #    '''
+    #    Input(s): Given visit search parameters
+    #    Output(s): Success value
+    #    '''
+    #    pass
+#
+    #def SearchAvailability(self):
+    #    '''
+    #    Input(s): Given visit search parameters
+    #    Output(s): Success value
+    #    '''
+    #    pass
