@@ -7,7 +7,7 @@ def forgetWidget(widget):
     widget.grid_forget()
 
 
-def mainWindow(window, lList, bList, eList):
+def mainWindow():
     w = 325
     h = 100
     sw = window.winfo_screenwidth()
@@ -21,18 +21,18 @@ def mainWindow(window, lList, bList, eList):
     label = Label(window, text="Hospital Login")
     label.grid(row=0, column=0)
     lList.append(label)
-    empButton = Button(window, text="Employee Login", command=lambda a=window, b=lList, c=bList, d=eList: employeeLogin(a, b, c, d))
+    empButton = Button(window, text="Employee Login", command=employeeLogin)
     empButton.grid(row=1, column=0, padx=(5, 0), sticky=N+S+E+W, ipadx=100)
     bList.append(empButton)
-    patButton = Button(window, text="Patient Login", command=lambda a=window, b=lList, c=bList, d=eList: patientLogin(a, b, c, d))
+    patButton = Button(window, text="Patient Login", command=patientLogin)
     patButton.grid(row=2, column=0, sticky=N+S+E+W)
     bList.append(patButton)
-    exitButton = Button(window, text="Exit Program", command=lambda x=window: exitProgram(x))
+    exitButton = Button(window, text="Exit Program", command=exitProgram)
     exitButton.grid(row=3, column=0, sticky=N+S+E+W)
     bList.append(exitButton)
 
 
-def employeeLogin(window, lList, bList, eList):
+def employeeLogin():
     w = 225
     h = 100
     sw = window.winfo_screenwidth()
@@ -72,17 +72,17 @@ def employeeLogin(window, lList, bList, eList):
     pEntry = Entry(window, textvariable=password, show='*')
     pEntry.grid(row=2, column=1, sticky=N+S+E+W)
     eList.append(pEntry)
-    exitButton = Button(window, text="Cancel", command=lambda a=window, b=lList, c=bList, d=eList: exitLogin(a, b, c, d))
+    exitButton = Button(window, text="Cancel", command=exitLogin)
     exitButton.grid(row=3, column=0, sticky=N+S+E+W)
     bList.append(exitButton)
-    loginButton = Button(window, text="Login", command=lambda a=window, b=lList, c=bList, d=eList, e=user, f=password: employeeCheck(a, b, c, d, e, f))
+    loginButton = Button(window, text="Login", command=lambda e=user, f=password: employeeCheck(e, f))
     loginButton.grid(row=3, column=1, sticky=N+S+E+W)
     bList.append(loginButton)
 
-    window.bind('<Return>', lambda event: employeeCheck(window, lList, bList, eList, user, password))
+    window.bind('<Return>', lambda event: employeeCheck(user, password))
 
 
-def patientLogin(window, lList, bList, eList):
+def patientLogin():
     w = 225
     h = 100
     sw = window.winfo_screenwidth()
@@ -123,27 +123,26 @@ def patientLogin(window, lList, bList, eList):
     pEntry = Entry(window, textvariable=password, show='*')
     pEntry.grid(row=2, column=1, sticky=N+S+E+W)
     eList.append(pEntry)
-    exitButton = Button(window, text="Cancel",
-                        command=lambda a=window, b=lList, c=bList, d=eList: exitLogin(a, b, c, d))
+    exitButton = Button(window, text="Cancel", command=exitLogin)
     exitButton.grid(row=3, column=0, sticky=N+S+E+W)
     bList.append(exitButton)
-    loginButton = Button(window, text="Login", command=lambda a=window, b=lList, c=bList, d=eList, e=user, f=password: patientCheck(a, b, c, d, e, f))
+    loginButton = Button(window, text="Login", command=lambda e=user, f=password: patientCheck(e, f))
     loginButton.grid(row=3, column=1, sticky=N+S+E+W)
     bList.append(loginButton)
 
-    window.bind('<Return>', lambda event: patientCheck(window, lList, bList, eList, user, password))
+    window.bind('<Return>', lambda event: patientCheck(user, password))
 
 
-def patientCheck(window, lList, bList, eList, username, password):
+def patientCheck(username, password):
     if username.get() != "patient" and password.get() != "password":
         tkinter.messagebox.showerror("Invalid username/password", "Username and/or password\ndoes not match any\naccounts in the server.")
-        logout(window, lList, bList, eList, 1)
+        logout(1)
     else:
         print("Patient View")
-        patientView(window, lList, bList, eList)
+        patientView()
 
 
-def patientView(window, lList, bList, eList):
+def patientView():
     w = 325
     h = 100
     sw = window.winfo_screenwidth()
@@ -177,24 +176,24 @@ def patientView(window, lList, bList, eList):
     vaButton = Button(window, text="View Appointment")
     vaButton.grid(row=2, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(vaButton)
-    logoutButton = Button(window, text="Logout", command=lambda a=window, b=lList, c=bList, d=eList: userLogout(a, b, c, d))
+    logoutButton = Button(window, text="Logout", command=userLogout)
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
 
 
-def employeeCheck(window, lList, bList, eList, username, password):
+def employeeCheck(username, password):
     if username.get() != "clerk" and password.get() != "password" or username.get() != "doctor" and password.get() != "password":
         tkinter.messagebox.showerror("Invalid username/password", "Username and/or password\ndoes not match any\naccounts in the server.")
-        logout(window, lList, bList, eList, 0)
+        logout(0)
     elif username.get() == "doctor" and password.get() == "password":
         print("Doctor View")
-        doctorView(window, lList, bList, eList)
+        doctorView()
     elif username.get() == "clerk" and password.get() == "password":
         print("Clerk View")
-        clerkView(window, lList, bList, eList)
+        clerkView()
 
 
-def doctorView(window, lList, bList, eList):
+def doctorView():
     w = 325
     h = 100
     sw = window.winfo_screenwidth()
@@ -225,11 +224,11 @@ def doctorView(window, lList, bList, eList):
     vaButton = Button(window, text="View Appointments")
     vaButton.grid(row=2, column=0, sticky=N+S+E+W, padx=(5, 0), ipadx=100)
     bList.append(vaButton)
-    logoutButton = Button(window, text="Logout", command=lambda a=window, b=lList, c=bList, d=eList: userLogout(a, b, c, d))
+    logoutButton = Button(window, text="Logout", command=userLogout)
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
 
-def clerkView(window, lList, bList, eList):
+def clerkView():
     w = 400
     h = 100
     sw = window.winfo_screenwidth()
@@ -263,18 +262,19 @@ def clerkView(window, lList, bList, eList):
     vaButton = Button(window, text="View Appointment for Patient")
     vaButton.grid(row=2, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(vaButton)
-    logoutButton = Button(window, text="Logout", command=lambda a=window, b=lList, c=bList, d=eList: userLogout(a, b, c, d))
+    logoutButton = Button(window, text="Logout", command=userLogout)
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
 
-
-def exitProgram(window):
+def makeAppointment():
+    print()
+def exitProgram():
     logoutMSG = tkinter.messagebox.askquestion('Close?', 'Do you want to close the program?')
     if logoutMSG == 'yes':
         window.destroy()
 
 
-def exitLogin(window, lList, bList, eList):
+def exitLogin():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -288,9 +288,9 @@ def exitLogin(window, lList, bList, eList):
     bList.clear()
     eList.clear()
 
-    mainWindow(window, lList, bList, eList)
+    mainWindow()
 
-def logout(window, lList, bList, eList, num):
+def logout(num):
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -305,11 +305,11 @@ def logout(window, lList, bList, eList, num):
     eList.clear()
 
     if num == 0:
-        employeeLogin(window, lList, bList, eList)
+        employeeLogin()
     else:
-        patientLogin(window, lList, bList, eList)
+        patientLogin()
 
-def userLogout(window, lList, bList, eList):
+def userLogout():
     logoutMSG = tkinter.messagebox.askquestion('Logout?', 'Do you wish to logout?')
 
     if logoutMSG == 'yes':
@@ -326,21 +326,25 @@ def userLogout(window, lList, bList, eList):
         bList.clear()
         eList.clear()
 
-        mainWindow(window, lList, bList, eList)
+        mainWindow()
 
 def main():
-    root = Tk()
-    labelList = []
-    buttonList = []
-    entryList = []
+    global window
+    window = Tk()
+    global lList
+    lList = []
+    global bList
+    bList = []
+    global eList
+    eList = []
     global username
     global passww
     username = StringVar()
     passww = StringVar()
-    root.title("Hospital Scheduling System")
-    mainWindow(root, labelList, buttonList, entryList)
+    window.title("Hospital Scheduling System")
+    mainWindow()
 
-    root.mainloop()
+    window.mainloop()
 
 
 if __name__ == "__main__":
