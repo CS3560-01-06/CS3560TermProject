@@ -170,7 +170,7 @@ def patientView():
     patientLabel = Label(window, text="Welcome, " + name)
     patientLabel.grid(row=0, column=0)
     lList.append(patientLabel)
-    maButton = Button(window, text="Make Appointment")
+    maButton = Button(window, text="Make Appointment", command=makeAppointment)
     maButton.grid(row=1, column=0, padx=(5, 0), sticky=N+S+E+W, ipadx=100)
     bList.append(maButton)
     vaButton = Button(window, text="View Appointment")
@@ -267,7 +267,35 @@ def clerkView():
     bList.append(logoutButton)
 
 def makeAppointment():
-    print()
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    lList.clear()
+    bList.clear()
+    eList.clear()
+
+    headLabel = Label(window, text="Make an Appointment")
+    headLabel.grid(row=0, column=0)
+    lList.append(headLabel)
+
+    searchDocButton = Button(window, text="Search Doctors")
+    searchDocButton.grid(row=1, column=0)
+    bList.append(searchDocButton)
+
+    searchSpecButton = Button(window, text="Search Specialty")
+    searchSpecButton.grid(row=2, column=0)
+    bList.append(searchSpecButton)
+
+    cancelButton = Button(window, text="Cancel", command=patientView)
+    cancelButton.grid(row=3, column=0)
+    bList.append(cancelButton)
+
 def exitProgram():
     logoutMSG = tkinter.messagebox.askquestion('Close?', 'Do you want to close the program?')
     if logoutMSG == 'yes':
@@ -337,6 +365,8 @@ def main():
     bList = []
     global eList
     eList = []
+    global tList
+    tList = []
     global username
     global passww
     username = StringVar()
