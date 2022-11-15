@@ -8,8 +8,8 @@ def forgetWidget(widget):
 
 
 def mainWindow():
-    w = 325
-    h = 100
+    w = 400
+    h = 150
     sw = window.winfo_screenwidth()
     sh = window.winfo_screenheight()
 
@@ -162,7 +162,11 @@ def patientView():
     for i in range(0, len(eList)):
         forgetWidget(eList[i])
 
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
     lList.clear()
+    tList.clear()
     bList.clear()
     eList.clear()
     name = "Patient"
@@ -173,12 +177,163 @@ def patientView():
     maButton = Button(window, text="Make Appointment", command=makeAppointment)
     maButton.grid(row=1, column=0, padx=(5, 0), sticky=N+S+E+W, ipadx=100)
     bList.append(maButton)
-    vaButton = Button(window, text="View Appointment")
+    vaButton = Button(window, text="View Appointment", command=viewAppointments)
     vaButton.grid(row=2, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(vaButton)
     logoutButton = Button(window, text="Logout", command=userLogout)
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
+
+
+def makeAppointment():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    lList.clear()
+    bList.clear()
+    eList.clear()
+
+    headLabel = Label(window, text="Make an Appointment")
+    headLabel.grid(row=0, column=0)
+    lList.append(headLabel)
+
+    searchDocButton = Button(window, text="Search Doctors", command=searchDoctor)
+    searchDocButton.grid(row=1, column=0)
+    bList.append(searchDocButton)
+
+    searchSpecButton = Button(window, text="Search Specialty", command=searchSpecialty)
+    searchSpecButton.grid(row=2, column=0)
+    bList.append(searchSpecButton)
+
+    cancelButton = Button(window, text="Cancel", command=patientView)
+    cancelButton.grid(row=3, column=0)
+    bList.append(cancelButton)
+
+
+def searchDoctor():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="Search for Doctor")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Name", "Specialty")
+    doctorTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    doctorTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    doctorTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    doctorTree.insert("", tkinter.END, values=("John Doe", "General Practioner"))
+    doctorTree.insert("", tkinter.END, values=("Jane Smith", "Surgeon"))
+    doctorTree.grid(row=1, column=0, columnspan=2)
+    tList.append(doctorTree)
+
+    cancelButton = Button(window, text="Cancel", command=patientView)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    confirmButton = Button(window, text="Confirm")
+    confirmButton.grid(row=2, column=1)
+    bList.append(confirmButton)
+
+def searchSpecialty():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="Search for Specialty")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Specialty", "Name")
+    specTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    specTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    specTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    specTree.insert("", tkinter.END, values=("General Practioner", "John Doe"))
+    specTree.insert("", tkinter.END, values=("Surgeon", "Jane Smith"))
+    specTree.grid(row=1, column=0, columnspan=2)
+    tList.append(specTree)
+
+    cancelButton = Button(window, text="Cancel", command=patientView)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    confirmButton = Button(window, text="Confirm")
+    confirmButton.grid(row=2, column=1)
+    bList.append(confirmButton)
+
+
+def viewAppointments():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="View Appointments")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Date", "Name", "Specialty")
+    appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    appointTree.insert("", tkinter.END, values=("12/15/22", "John Doe", "General Practioner"))
+    appointTree.insert("", tkinter.END, values=("12/20/22", "Jane Smith", "Surgeon"))
+    appointTree.grid(row=1, column=0, columnspan=2)
+    tList.append(appointTree)
+
+    cancelButton = Button(window, text="Cancel", command=patientView)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    editButton = Button(window, text="Edit Appointment")
+    editButton.grid(row=2, column=1)
+    bList.append(editButton)
 
 
 def employeeCheck(username, password):
@@ -213,20 +368,66 @@ def doctorView():
     for i in range(0, len(eList)):
         forgetWidget(eList[i])
 
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
     lList.clear()
+    tList.clear()
     bList.clear()
     eList.clear()
+
     name = "Doctor"
 
     doctorLabel = Label(window, text="Welcome, " + name)
     doctorLabel.grid(row=0, column=0)
     lList.append(doctorLabel)
-    vaButton = Button(window, text="View Appointments")
+    vaButton = Button(window, text="View Appointments", command=viewDoctorAppointments)
     vaButton.grid(row=2, column=0, sticky=N+S+E+W, padx=(5, 0), ipadx=100)
     bList.append(vaButton)
     logoutButton = Button(window, text="Logout", command=userLogout)
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
+
+
+def viewDoctorAppointments():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="View Appointments")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Date", "Name")
+    appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.insert("", tkinter.END, values=("12/15/22", "Timmy Jones"))
+    appointTree.insert("", tkinter.END, values=("12/20/22", "Kimberly Kwan"))
+    appointTree.grid(row=1, column=0, columnspan=2)
+    tList.append(appointTree)
+
+    cancelButton = Button(window, text="Cancel", command=doctorView)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    editButton = Button(window, text="Edit Appointment")
+    editButton.grid(row=2, column=1)
+    bList.append(editButton)
+
 
 def clerkView():
     w = 400
@@ -248,7 +449,11 @@ def clerkView():
     for i in range(0, len(eList)):
         forgetWidget(eList[i])
 
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
     lList.clear()
+    tList.clear()
     bList.clear()
     eList.clear()
     name = "Clerk"
@@ -256,17 +461,18 @@ def clerkView():
     clerkLabel = Label(window, text="Welcome, " + name)
     clerkLabel.grid(row=0, column=0)
     lList.append(clerkLabel)
-    maButton = Button(window, text="Make Appointment for Patient")
+    maButton = Button(window, text="Make Appointment for Patient", command=selectMAPatient)
     maButton.grid(row=1, column=0, padx=(5, 0), sticky=N+S+E+W, ipadx=100)
     bList.append(maButton)
-    vaButton = Button(window, text="View Appointment for Patient")
+    vaButton = Button(window, text="View Appointment for Patient", command=selectVAPatient)
     vaButton.grid(row=2, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(vaButton)
     logoutButton = Button(window, text="Logout", command=userLogout)
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
 
-def makeAppointment():
+
+def selectMAPatient():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -276,25 +482,241 @@ def makeAppointment():
     for i in range(0, len(eList)):
         forgetWidget(eList[i])
 
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
     lList.clear()
+    tList.clear()
     bList.clear()
     eList.clear()
 
-    headLabel = Label(window, text="Make an Appointment")
+    headerLabel = Label(window, text="Select Patient")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Patient ID", "Name")
+    appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Patient ID", text="Patient ID", anchor=tkinter.CENTER)
+    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.insert("", tkinter.END, values=("1", "Timmy Jones"))
+    appointTree.insert("", tkinter.END, values=("2", "Kimberly Kwan"))
+    appointTree.grid(row=1, column=0, columnspan=2)
+    tList.append(appointTree)
+
+    cancelButton = Button(window, text="Cancel", command=clerkView)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    confirmButton = Button(window, text="Confirm Patient", command=lambda x=appointTree: getMAPatient(x))
+    confirmButton.grid(row=2, column=1)
+    bList.append(confirmButton)
+
+
+def getMAPatient(tree):
+    temp = tree.selection()[0]
+    makePatientAppointment(tree.item(temp)['values'][0])
+
+def selectVAPatient():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="Select Patient")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Patient ID", "Name")
+    appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Patient ID", text="Patient ID", anchor=tkinter.CENTER)
+    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.insert("", tkinter.END, values=("1", "Timmy Jones"))
+    appointTree.insert("", tkinter.END, values=("2", "Kimberly Kwan"))
+    appointTree.grid(row=1, column=0, columnspan=2)
+    tList.append(appointTree)
+
+    cancelButton = Button(window, text="Cancel", command=clerkView)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    confirmButton = Button(window, text="Confirm Patient", command=lambda x=appointTree: getVAPatient(x))
+    confirmButton.grid(row=2, column=1)
+    bList.append(confirmButton)
+
+def getVAPatient(tree):
+    temp = tree.selection()[0]
+    viewPatientAppointments(tree.item(temp)['values'][0])
+
+def makePatientAppointment(patientID):
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headLabel = Label(window, text="Make an Appointment for " + str(patientID))
     headLabel.grid(row=0, column=0)
     lList.append(headLabel)
 
-    searchDocButton = Button(window, text="Search Doctors")
+    searchDocButton = Button(window, text="Search Doctors", command=lambda a=patientID: searchPatientDoctor(a))
     searchDocButton.grid(row=1, column=0)
     bList.append(searchDocButton)
 
-    searchSpecButton = Button(window, text="Search Specialty")
+    searchSpecButton = Button(window, text="Search Specialty", command=lambda a=patientID: searchPatientSpecialty(a))
     searchSpecButton.grid(row=2, column=0)
     bList.append(searchSpecButton)
 
-    cancelButton = Button(window, text="Cancel", command=patientView)
+    cancelButton = Button(window, text="Cancel", command=selectMAPatient)
     cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
+
+
+def searchPatientDoctor(patientID):
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="Search for Doctor")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Name", "Specialty")
+    doctorTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    doctorTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    doctorTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    doctorTree.insert("", tkinter.END, values=("John Doe", "General Practioner"))
+    doctorTree.insert("", tkinter.END, values=("Jane Smith", "Surgeon"))
+    doctorTree.grid(row=1, column=0, columnspan=2)
+    tList.append(doctorTree)
+
+    cancelButton = Button(window, text="Cancel", command=selectMAPatient)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    confirmButton = Button(window, text="Confirm")
+    confirmButton.grid(row=2, column=1)
+    bList.append(confirmButton)
+
+def searchPatientSpecialty(PatientID):
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="Search for Specialty")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Specialty", "Name")
+    specTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    specTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    specTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    specTree.insert("", tkinter.END, values=("General Practioner", "John Doe"))
+    specTree.insert("", tkinter.END, values=("Surgeon", "Jane Smith"))
+    specTree.grid(row=1, column=0, columnspan=2)
+    tList.append(specTree)
+
+    cancelButton = Button(window, text="Cancel", command=selectMAPatient)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    confirmButton = Button(window, text="Confirm")
+    confirmButton.grid(row=2, column=1)
+    bList.append(confirmButton)
+
+
+def viewPatientAppointments(patientID):
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    headerLabel = Label(window, text="View Appointments")
+    headerLabel.grid(row=0, column=0)
+    lList.append(headerLabel)
+
+    cols = ("Date", "Name", "Specialty")
+    appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    if patientID == 1:
+        appointTree.insert("", tkinter.END, values=("12/15/22", "John Doe", "General Practioner"))
+        appointTree.insert("", tkinter.END, values=("12/20/22", "Jane Smith", "Surgeon"))
+    else:
+        appointTree.insert("", tkinter.END, values=("12/10/22", "Jane Smith", "Surgeon"))
+        appointTree.insert("", tkinter.END, values=("12/15/22", "Jane Smith", "Surgeon"))
+    appointTree.grid(row=1, column=0, columnspan=2)
+    tList.append(appointTree)
+
+    cancelButton = Button(window, text="Cancel", command=selectVAPatient)
+    cancelButton.grid(row=2, column=0)
+    bList.append(cancelButton)
+
+    editButton = Button(window, text="Edit Appointment")
+    editButton.grid(row=2, column=1)
+    bList.append(editButton)
+
 
 def exitProgram():
     logoutMSG = tkinter.messagebox.askquestion('Close?', 'Do you want to close the program?')
