@@ -269,8 +269,9 @@ def clerkView(window, lList, bList, eList):
 
 
 def exitProgram(window):
-    print("Exiting Program...")
-    window.destroy()
+    logoutMSG = tkinter.messagebox.askquestion('Close?', 'Do you want to close the program?')
+    if logoutMSG == 'yes':
+        window.destroy()
 
 
 def exitLogin(window, lList, bList, eList):
