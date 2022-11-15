@@ -16,4 +16,20 @@ def create_server_connection(host_name, user_name, user_password):
 
     return connection
 
-    connection = create_server_connection("localhost", "root", pw)
+def create_database(connection, query):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(query)
+        print("Database created successfully")
+    except Error as err:
+        print(f"Error: '{err}'")
+
+
+host_name = "127.0.0.1"
+user_name = "root"
+user_password = "t@BN6wra3M7n!TG%"
+
+connection = create_server_connection(host_name, user_name, user_password)
+
+create_database_quury = "CREATE DATABASE school"
+create_database(connection, create_database_quury)
