@@ -9,8 +9,10 @@ class Calender(Doctor):
         self.date = date # int
 
     def getAvailableTimes(self):
+        # Output: returns list of strings which contain times in 30-minute-intervals
         return self.TIMES
 
     def removeTime(self, time: str):
+        # Input: time string to be removed from the object's time list
         if time in self.TIMES:
             self.TIMES.remove(time)
