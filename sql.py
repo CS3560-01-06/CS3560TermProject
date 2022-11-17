@@ -25,9 +25,9 @@ def create_database(connection, query):
         print(f"Error: '{err}'")
 
 
-host_name = "127.0.0.1"
+host_name = "localhost"
 user_name = "root"
-user_password = "t@BN6wra3M7n!TG%"
+user_password = "your-root-pass-for-sql"
 
 connection = create_server_connection(host_name, user_name, user_password)
 
