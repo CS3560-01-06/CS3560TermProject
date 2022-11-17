@@ -2,6 +2,34 @@ import tkinter
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
+from classes.Patient import Patient
+import mysql.connector
+
+def connectSQL():
+    global connector
+    connector = mysql.connector.connect(host='127.0.0.1', user='nick', password='nd26',
+                                        database='3560sql', auth_plugin='mysql_native_password')
+
+def closeSQL():
+    if connector.is_connected():
+        connector.close()
+
+
+def getPatients():
+    selectAccount = "select * from Account"
+    cursor = connector.cursor()
+    cursor.execute(selectAccount)
+    records = cursor.fetchall()
+    selectPatient = "select * from Patient"
+    cursor.execute(selectPatient)
+    records2 = cursor.fetchall()
+
+    for row in records:
+        for rrow in records2:
+            if row[0] == rrow[1]:
+                patient.append(Patient(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[0], rrow[2], rrow[3]))
+
+    cursor.close()
 
 def forgetWidget(widget):
     widget.grid_forget()
@@ -110,7 +138,7 @@ def patientLogin():
     headerLabel = Label(window, text="Patient Login")
     headerLabel.grid(row=0, column=0, columnspan=2)
     lList.append(headerLabel)
-    uLabel = Label(window, text="Username")
+    uLabel = Label(window, text="Username/Email Address")
     uLabel.grid(row=1, column=0)
     lList.append(uLabel)
     uEntry = Entry(window, textvariable=user)
@@ -134,7 +162,15 @@ def patientLogin():
 
 
 def patientCheck(username, password):
-    if username.get() != "patient" and password.get() != "password":
+    count = 0
+    print(username.get() + " " + password.get())
+    for pat in range(0, len(patient)):
+        if str(patient[pat].getUsername()) == username.get() and str(patient[pat].getPassword()) == password.get():
+            count = count + 1
+            global currentPatient
+            currentPatient = patient[pat]
+
+    if count == 0:
         tkinter.messagebox.showerror("Invalid username/password", "Username and/or password\ndoes not match any\naccounts in the server.")
         logout(1)
     else:
@@ -169,7 +205,7 @@ def patientView():
     tList.clear()
     bList.clear()
     eList.clear()
-    name = "Patient"
+    name = currentPatient.getName()
 
     patientLabel = Label(window, text="Welcome, " + name)
     patientLabel.grid(row=0, column=0)
@@ -779,6 +815,7 @@ def userLogout():
         mainWindow()
 
 def main():
+    global connector
     global window
     window = Tk()
     global lList
@@ -791,11 +828,18 @@ def main():
     tList = []
     global username
     global passww
+    global currentPatient
+    global patient
+    connectSQL()
+    patient = []
+    getPatients()
+    closeSQL()
     username = StringVar()
     passww = StringVar()
     window.title("Hospital Scheduling System")
     mainWindow()
-
+    print(patient[0].getUsername())
+    print(patient[0].getPassword())
     window.mainloop()
 
 
