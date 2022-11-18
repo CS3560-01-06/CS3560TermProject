@@ -3,6 +3,8 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from classes.Patient import Patient
+from classes.Doctor import Doctor
+from classes.Staff import Staff
 import mysql.connector
 
 def connectSQL():
@@ -30,6 +32,44 @@ def getPatients():
                 patient.append(Patient(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[0], rrow[2], rrow[3]))
 
     cursor.close()
+
+def getDoctors():
+    selectAccount = "select * from Account"
+    cursor = connector.cursor()
+    cursor.execute(selectAccount)
+    records = cursor.fetchall()
+    selectStaff = "select * from Staff"
+    cursor.execute(selectStaff)
+    records2 = cursor.fetchall()
+    selectDoctor = "select * from Doctor"
+    cursor.execute(selectDoctor)
+    records3 = cursor.fetchall()
+
+    for row in records:
+        for rrow in records2:
+            for rrrow in records3:
+                if row[0] == rrrow[2] and rrow[0] == rrrow[1]:
+                    doctors.append(Doctor(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[1], rrow[2], rrrow[1], rrrow[3]))
+
+    cursor.close()
+
+
+def getEmployees():
+    selectAccount = "select * from Account"
+    cursor = connector.cursor()
+    cursor.execute(selectAccount)
+    records = cursor.fetchall()
+    selectStaff = "select * from Staff"
+    cursor.execute(selectStaff)
+    records2 = cursor.fetchall()
+
+    for row in records:
+        for rrow in records2:
+                if row[0] == rrow[1]:
+                    employees.append(Staff(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[0], rrow[2]))
+
+    cursor.close()
+
 
 def forgetWidget(widget):
     widget.grid_forget()
@@ -163,7 +203,6 @@ def patientLogin():
 
 def patientCheck(username, password):
     count = 0
-    print(username.get() + " " + password.get())
     for pat in range(0, len(patient)):
         if str(patient[pat].getUsername()) == username.get() and str(patient[pat].getPassword()) == password.get():
             count = count + 1
@@ -269,6 +308,7 @@ def searchDoctor():
     tList.clear()
     bList.clear()
     eList.clear()
+    idList.clear()
 
     headerLabel = Label(window, text="Search for Doctor")
     headerLabel.grid(row=0, column=0)
@@ -278,18 +318,52 @@ def searchDoctor():
     doctorTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     doctorTree.heading("Name", text="Name", anchor=tkinter.CENTER)
     doctorTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
-    doctorTree.insert("", tkinter.END, values=("John Doe", "General Practioner"))
-    doctorTree.insert("", tkinter.END, values=("Jane Smith", "Surgeon"))
+    for doctor in doctors:
+        idList.append(doctor.getDoctorID())
+        doctorTree.insert("", tkinter.END, values=(doctor.getName(), doctor.getSpecialty()))
     doctorTree.grid(row=1, column=0, columnspan=2)
     tList.append(doctorTree)
 
+    searchLabel = Label(window, text="Search Name")
+    searchLabel.grid(row=2, column=0)
+    lList.append(searchLabel)
+    global search
+    search = StringVar()
+    search.set("")
+
+    searchEntry = Entry(window, textvariable=search)
+    searchEntry.grid(row=2, column=1)
+    eList.append(searchEntry)
+
+    updateButton = Button(window, text="Update Search", command=lambda x=doctorTree, y=search: searchDoctorUpdate(x, y))
+    updateButton.grid(row=2, column=2)
+    bList.append(updateButton)
+
     cancelButton = Button(window, text="Cancel", command=patientView)
-    cancelButton.grid(row=2, column=0)
+    cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
 
-    confirmButton = Button(window, text="Confirm")
-    confirmButton.grid(row=2, column=1)
+    confirmButton = Button(window, text="Confirm", command=lambda x=doctorTree: confirmDoctor(x))
+    confirmButton.grid(row=3, column=1)
     bList.append(confirmButton)
+
+def searchDoctorUpdate(tree, search):
+    idList.clear()
+    count = 0
+    for item in tree.get_children():
+        tree.delete(item)
+
+    for doctor in doctors:
+        if str(doctor.getName()) == search.get():
+            count = count + 1
+            idList.append(doctor.getDoctorID())
+            tree.insert("", tkinter.END, values=(doctor.getName(), doctor.getSpecialty()))
+
+    if count == 0:
+        for doctor in doctors:
+            idList.append(doctor.getDoctorID())
+            tree.insert("", tkinter.END, values=(doctor.getName(), doctor.getSpecialty()))
+
 
 def searchSpecialty():
     for i in range(0, len(bList)):
@@ -308,6 +382,7 @@ def searchSpecialty():
     tList.clear()
     bList.clear()
     eList.clear()
+    idList.clear()
 
     headerLabel = Label(window, text="Search for Specialty")
     headerLabel.grid(row=0, column=0)
@@ -317,19 +392,57 @@ def searchSpecialty():
     specTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     specTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
     specTree.heading("Name", text="Name", anchor=tkinter.CENTER)
-    specTree.insert("", tkinter.END, values=("General Practioner", "John Doe"))
-    specTree.insert("", tkinter.END, values=("Surgeon", "Jane Smith"))
+    for doctor in doctors:
+        idList.append(doctor.getDoctorID())
+        specTree.insert("", tkinter.END, values=(doctor.getSpecialty(), doctor.getName()))
     specTree.grid(row=1, column=0, columnspan=2)
     tList.append(specTree)
 
+    searchLabel = Label(window, text="Search Specialty")
+    searchLabel.grid(row=2, column=0)
+    lList.append(searchLabel)
+
+    global search
+    search = StringVar()
+    search.set("")
+
+    searchEntry = Entry(window, textvariable=search)
+    searchEntry.grid(row=2, column=1)
+    eList.append(searchEntry)
+
+    updateButton = Button(window, text="Update Search")
+    updateButton.grid(row=2, column=2)
+    bList.append(updateButton)
+
     cancelButton = Button(window, text="Cancel", command=patientView)
-    cancelButton.grid(row=2, column=0)
+    cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
 
     confirmButton = Button(window, text="Confirm")
-    confirmButton.grid(row=2, column=1)
+    confirmButton.grid(row=3, column=1)
     bList.append(confirmButton)
 
+
+def confirmDoctor(tree):
+    try:
+        temp = tree.selection()[0]
+        for doctor in doctors:
+            for id in idList:
+                if doctor.getDoctorID() == id and tree.item(temp)['values'][0] == str(doctor.getName()) and tree.item(temp)['values'][1] == str(doctor.getSpecialty()):
+                    global currentDoctor
+                    currentDoctor = doctor
+                    print(doctor.getName() + " " + doctor.getSpecialty())
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
+
+def confirmSpecialty(tree):
+    temp = tree.selection()[0]
+    for doctor in doctors:
+        for id in idList:
+            if doctor.getDoctorID() == id and tree.item(temp)['values'][1] == str(doctor.getName()) and tree.item(temp)['values'][0] == str(doctor.getSpecialty()):
+                global currentDoctor
+                currentDoctor = doctor
+                print(doctor.getName() + " " + doctor.getSpecialty())
 
 def viewAppointments():
     for i in range(0, len(bList)):
@@ -373,15 +486,31 @@ def viewAppointments():
 
 
 def employeeCheck(username, password):
-    if username.get() != "clerk" and password.get() != "password" or username.get() != "doctor" and password.get() != "password":
+    count = 0
+    print(doctors[0].getUsername())
+    print(doctors[0].getPassword())
+    print(username.get())
+    print(password.get())
+    for doctor in doctors:
+        if str(doctor.getUsername()) == username.get() and str(doctor.getPassword()) == password.get() or str(doctor.getEmail()) == username.get() and str(doctor.getPassword()) == password.get():
+            count = count + 1
+            global currentDoctor
+            currentDoctor = doctor
+            doctorView()
+            break
+
+    if count == 0:
+        for employee in employees:
+            if employee.getUsername() == username.get() and employee.getPassword() == password.get() or employee.getEmail() == username.get() and employee.getPassword() == password.get():
+                count = count + 1
+                global currentEmployee
+                currentEmployee = employee
+                clerkView()
+                break
+
+    if count == 0:
         tkinter.messagebox.showerror("Invalid username/password", "Username and/or password\ndoes not match any\naccounts in the server.")
         logout(0)
-    elif username.get() == "doctor" and password.get() == "password":
-        print("Doctor View")
-        doctorView()
-    elif username.get() == "clerk" and password.get() == "password":
-        print("Clerk View")
-        clerkView()
 
 
 def doctorView():
@@ -412,7 +541,7 @@ def doctorView():
     bList.clear()
     eList.clear()
 
-    name = "Doctor"
+    name = currentDoctor.getName()
 
     doctorLabel = Label(window, text="Welcome, " + name)
     doctorLabel.grid(row=0, column=0)
@@ -492,7 +621,7 @@ def clerkView():
     tList.clear()
     bList.clear()
     eList.clear()
-    name = "Clerk"
+    name = currentEmployee.getName()
 
     clerkLabel = Label(window, text="Welcome, " + name)
     clerkLabel.grid(row=0, column=0)
@@ -830,9 +959,20 @@ def main():
     global passww
     global currentPatient
     global patient
+    global doctors
+    global currentDoctor
+    global currentEmployee
+    global employees
+    global idList
+    global search
     connectSQL()
     patient = []
+    doctors = []
+    employees = []
+    idList = []
     getPatients()
+    getDoctors()
+    getEmployees()
     closeSQL()
     username = StringVar()
     passww = StringVar()
