@@ -1,17 +1,26 @@
 class Appointment:
-    def __init__(self,appointmentType, reason, time):
+    def __init__(self, idAppointment, idCalendar, idPatient, idDoctor, appointmentType, reason):
+        self.idAppointment = idAppointment
+        self.idCalendar = idCalendar  # int
+        self.idPatient = idPatient  # int
+        self.idDoctor = idDoctor  # int
         self.appointmentType = appointmentType # string
         self.reason = reason # string
-        self.time = time # int
 
-    def getAppointmentMenu():
-        return
+    def getIDCalendar(self):
+        return self.idCalendar
 
-    def selectAppointment(appointmentID):
-        return
+    def getIDDoctor(self):
+        return self.idDoctor
 
-    def setAppointment():
-        return
+    def getPatientID(self):
+        return self.idPatient
 
-    def removeAppointment():
-        return
+    def getType(self):
+        return self.appointmentType
+
+    def getReason(self):
+        return self.reason
+
+    def getIDAppointment(self):
+        return self.idAppointment

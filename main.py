@@ -7,6 +7,7 @@ from classes.Patient import Patient
 from classes.Doctor import Doctor
 from classes.Staff import Staff
 from classes.Availability import Availability
+from classes.Appointment import Appointment
 from classes.Calender import Cal
 import mysql.connector
 from tkcalendar import DateEntry, Calendar
@@ -98,6 +99,35 @@ def getCalendar():
         calendars.append(Cal(row[0], row[1], row[2]))
 
     cursor.close()
+
+def getAppointments():
+    selectAvail = "select * from Appointment"
+    cursor = connector.cursor()
+    cursor.execute(selectAvail)
+    records = cursor.fetchall()
+
+    for row in records:
+        appointments.append(Appointment(row[0], row[1], row[2], row[3], row[4], row[5]))
+
+    cursor.close()
+
+
+def updateLists():
+    calendars.clear()
+    availability.clear()
+    patient.clear()
+    doctors.clear()
+    employees.clear()
+    appointments.clear()
+
+    connectSQL()
+    getPatients()
+    getDoctors()
+    getEmployees()
+    getAvailability()
+    getCalendar()
+    getAppointments()
+    closeSQL()
 
 
 def forgetWidget(widget):
@@ -247,6 +277,8 @@ def patientCheck(username, password):
 
 
 def patientView():
+    updateLists()
+
     w = 325
     h = 100
     sw = window.winfo_screenwidth()
@@ -288,6 +320,7 @@ def patientView():
     logoutButton.grid(row=3, column=0, sticky=N+S+E+W, padx=(5, 0))
     bList.append(logoutButton)
 
+    window.unbind_all('<Return>')
 
 def makeAppointment():
     for i in range(0, len(bList)):
@@ -614,24 +647,43 @@ def finalizeAppointment(cal, avail):
     str1.set(strOp[0])
     dateLabel = Label(window, text=str(currentDate.getDate()))
     dateLabel.grid(row=0, column=0)
+    lList.append(dateLabel)
 
     timeLabel = Label(window, text=str(currentDate.getTime()))
     timeLabel.grid(row=1, column=0)
+    lList.append(timeLabel)
 
     doctorLabel = Label(window, text=str(currentDoctor.getName()) + "\nSpecialty: " + str(currentDoctor.getSpecialty()))
     doctorLabel.grid(row=2, column=0)
+    lList.append(doctorLabel)
 
     reasonDrop = OptionMenu(window, str1, *strOp)
     reasonDrop.grid(row=3, column=0)
+    global currentDrop
+    currentDrop = reasonDrop
 
     textbox = Text(window, height=5, width=52)
     textbox.grid(row=4, column=0)
+    global currentText
+    currentText = textbox
 
     confirm = Button(window, text="Confirm", command=lambda x=str1, y=textbox: showConfirm(x, y))
     confirm.grid(row=5, column=0)
-
+    bList.append(confirm)
 
 def showConfirm(drop, text):
+    global currentDrop
+    global currentText
+
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    forgetWidget(currentDrop)
+    forgetWidget(currentText)
+
     connectSQL()
     sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
     val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
@@ -652,13 +704,16 @@ def showConfirm(drop, text):
 
 
 def confirmSpecialty(tree):
-    temp = tree.selection()[0]
-    for doctor in doctors:
-        for id in idList:
-            if doctor.getDoctorID() == id and tree.item(temp)['values'][1] == str(doctor.getName()) and tree.item(temp)['values'][0] == str(doctor.getSpecialty()):
-                global currentDoctor
-                currentDoctor = doctor
-                showSCalendar()
+    try:
+        temp = tree.selection()[0]
+        for doctor in doctors:
+            for id in idList:
+                if doctor.getDoctorID() == id and tree.item(temp)['values'][1] == str(doctor.getName()) and tree.item(temp)['values'][0] == str(doctor.getSpecialty()):
+                    global currentDoctor
+                    currentDoctor = doctor
+                    showSCalendar()
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
 
 def showSCalendar():
     for i in range(0, len(bList)):
@@ -694,6 +749,7 @@ def showSCalendar():
     cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
 
+
 def viewAppointments():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
@@ -716,13 +772,20 @@ def viewAppointments():
     headerLabel.grid(row=0, column=0)
     lList.append(headerLabel)
 
-    cols = ("Date", "Name", "Specialty")
+    cols = ("Appointment Number", "Date", "Time", "Name", "Specialty", "Appointment Type", "Reason")
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Appointment Number", text="Appointment Number", anchor=tkinter.CENTER)
     appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.heading("Time", text="Time", anchor=tkinter.CENTER)
     appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
     appointTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
-    appointTree.insert("", tkinter.END, values=("12/15/22", "John Doe", "General Practioner"))
-    appointTree.insert("", tkinter.END, values=("12/20/22", "Jane Smith", "Surgeon"))
+    appointTree.heading("Appointment Type", text="Appointment Type", anchor=tkinter.CENTER)
+    appointTree.heading("Reason", text="Reason", anchor=tkinter.CENTER)
+    for appointment in appointments:
+        for cal in calendars:
+            for doc in doctors:
+                if str(appointment.getIDCalendar()) == str(cal.getIDCalendar()) and str(appointment.getIDDoctor()) == str(doc.getDoctorID()) and str(appointment.getPatientID()) == str(currentPatient.getPatientID()):
+                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(doc.getName()), str(doc.getSpecialty()), str(appointment.getType()), str(appointment.getReason())))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
@@ -730,17 +793,50 @@ def viewAppointments():
     cancelButton.grid(row=2, column=0)
     bList.append(cancelButton)
 
-    editButton = Button(window, text="Edit Appointment")
+    editButton = Button(window, text="Remove Appointment", command=lambda x=appointTree: removeAppointment(x))
     editButton.grid(row=2, column=1)
     bList.append(editButton)
+
+def removeAppointment(tree):
+    try:
+        answer = tkinter.messagebox.askyesno("Confirm?", "Remove the selected appointment?")
+        temp = tree.selection()[0]
+        global currentAvail
+        global currentAppointment
+        if answer:
+            for appointment in appointments:
+                if str(tree.item(temp)['values'][0]) == str(appointment.getIDAppointment()):
+                    currentAppointment = appointment
+
+            for avail in availability:
+                if str(currentAppointment.getIDCalendar()) == str(avail.getIDCalendar()) and str(
+                        currentAppointment.getIDDoctor()) == str(avail.getIDDoctor()):
+                            currentAvail = avail
+                            currentAvail.setAvail(1)
+
+            connectSQL()
+            cursor = connector.cursor()
+
+            sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
+            val = (currentAvail.getAvail(), currentAvail.getIDAvail())
+            cursor.execute(sql, val)
+            connector.commit()
+
+            sql = "DELETE FROM Appointment WHERE idDoctor = %s and idCalendar = %s and idPatient = %s"
+            val = (currentAppointment.getIDDoctor(), currentAppointment.getIDCalendar(), currentAppointment.getPatientID())
+            cursor.execute(sql, val)
+            connector.commit()
+
+            cursor.close()
+            closeSQL()
+
+            patientView()
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
 
 
 def employeeCheck(username, password):
     count = 0
-    print(doctors[0].getUsername())
-    print(doctors[0].getPassword())
-    print(username.get())
-    print(password.get())
     for doctor in doctors:
         if str(doctor.getUsername()) == username.get() and str(doctor.getPassword()) == password.get() or str(doctor.getEmail()) == username.get() and str(doctor.getPassword()) == password.get():
             count = count + 1
@@ -764,6 +860,8 @@ def employeeCheck(username, password):
 
 
 def doctorView():
+    window.unbind_all('<Return>')
+
     w = 325
     h = 100
     sw = window.winfo_screenwidth()
@@ -845,6 +943,8 @@ def viewDoctorAppointments():
 
 
 def clerkView():
+    window.unbind_all('<Return>')
+
     w = 400
     h = 100
     sw = window.winfo_screenwidth()
@@ -1205,6 +1305,8 @@ def main():
     eList = []
     global tList
     tList = []
+    global appointments
+    global currentAppointment
     global username
     global passww
     global currentPatient
@@ -1221,6 +1323,8 @@ def main():
     global currentCal
     global cList
     global currentDate
+    global currentDrop
+    global currentText
     cList = []
     calendars = []
     availability = []
@@ -1228,13 +1332,8 @@ def main():
     doctors = []
     employees = []
     idList = []
-    connectSQL()
-    getPatients()
-    getDoctors()
-    getEmployees()
-    getAvailability()
-    getCalendar()
-    closeSQL()
+    appointments = []
+    updateLists()
     username = StringVar()
     passww = StringVar()
     window.title("Hospital Scheduling System")
