@@ -1,3 +1,4 @@
+import datetime
 import tkinter
 from tkinter import *
 from tkinter import messagebox
@@ -5,7 +6,11 @@ from tkinter import ttk
 from classes.Patient import Patient
 from classes.Doctor import Doctor
 from classes.Staff import Staff
+from classes.Availability import Availability
+from classes.Calender import Cal
 import mysql.connector
+from tkcalendar import DateEntry, Calendar
+from datetime import date, timedelta
 
 def connectSQL():
     global connector
@@ -49,7 +54,7 @@ def getDoctors():
         for rrow in records2:
             for rrrow in records3:
                 if row[0] == rrrow[2] and rrow[0] == rrrow[1]:
-                    doctors.append(Doctor(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[1], rrow[2], rrrow[1], rrrow[3]))
+                    doctors.append(Doctor(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[0], rrow[2], rrrow[0], rrrow[3]))
 
     cursor.close()
 
@@ -67,6 +72,30 @@ def getEmployees():
         for rrow in records2:
                 if row[0] == rrow[1]:
                     employees.append(Staff(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], rrow[0], rrow[2]))
+
+    cursor.close()
+
+
+def getAvailability():
+    selectAvail = "select * from Availability"
+    cursor = connector.cursor()
+    cursor.execute(selectAvail)
+    records = cursor.fetchall()
+
+    for row in records:
+        availability.append(Availability(row[0], row[1], row[2], row[3]))
+
+
+    cursor.close()
+
+def getCalendar():
+    selectCal = "select * from Calendar"
+    cursor = connector.cursor()
+    cursor.execute(selectCal)
+    records = cursor.fetchall()
+
+    for row in records:
+        calendars.append(Cal(row[0], row[1], row[2]))
 
     cursor.close()
 
@@ -347,6 +376,7 @@ def searchDoctor():
     confirmButton.grid(row=3, column=1)
     bList.append(confirmButton)
 
+
 def searchDoctorUpdate(tree, search):
     idList.clear()
     count = 0
@@ -410,7 +440,7 @@ def searchSpecialty():
     searchEntry.grid(row=2, column=1)
     eList.append(searchEntry)
 
-    updateButton = Button(window, text="Update Search")
+    updateButton = Button(window, text="Update Search", command=lambda x=specTree, y=search: searchSpecUpdate(x, y))
     updateButton.grid(row=2, column=2)
     bList.append(updateButton)
 
@@ -418,10 +448,26 @@ def searchSpecialty():
     cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
 
-    confirmButton = Button(window, text="Confirm")
+    confirmButton = Button(window, text="Confirm", command=lambda x=specTree: confirmSpecialty(x))
     confirmButton.grid(row=3, column=1)
     bList.append(confirmButton)
 
+def searchSpecUpdate(tree, search):
+    idList.clear()
+    count = 0
+    for item in tree.get_children():
+        tree.delete(item)
+
+    for doctor in doctors:
+        if str(doctor.getSpecialty()) == search.get():
+            count = count + 1
+            idList.append(doctor.getDoctorID())
+            tree.insert("", tkinter.END, values=(doctor.getSpecialty(), doctor.getName()))
+
+    if count == 0:
+        for doctor in doctors:
+            idList.append(doctor.getDoctorID())
+            tree.insert("", tkinter.END, values=(doctor.getSpecialty(), doctor.getName()))
 
 def confirmDoctor(tree):
     try:
@@ -431,9 +477,179 @@ def confirmDoctor(tree):
                 if doctor.getDoctorID() == id and tree.item(temp)['values'][0] == str(doctor.getName()) and tree.item(temp)['values'][1] == str(doctor.getSpecialty()):
                     global currentDoctor
                     currentDoctor = doctor
-                    print(doctor.getName() + " " + doctor.getSpecialty())
+                    showDCalendar()
     except IndexError:
         tkinter.messagebox.showerror("Error", "No Selection Made")
+
+
+def showDCalendar():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    cList.clear()
+    dmax = date.today() + timedelta(days=365)
+    cal = Calendar(window, selectmode="day", mindate=date.today() + timedelta(days=1), maxdate=dmax, date_pattern="yyyy-mm-dd", disableddaybackground="grey", locale="en_US")
+    cal.grid(row=0, column=0)
+    cList.append(cal)
+
+    dateConfirm = Button(window, text="Confirm Date", command=confirmDate)
+    dateConfirm.grid(row=1, column=1)
+    bList.append(dateConfirm)
+
+    cancelButton = Button(window, text="Cancel", command=lambda x=1: calCancel(x))
+    cancelButton.grid(row=3, column=0)
+    bList.append(cancelButton)
+
+def calCancel(num):
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    cList.clear()
+
+    if num != 0:
+        searchSpecialty()
+    else:
+        searchDoctor()
+
+def confirmDate():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    count = 0
+    for cal in calendars:
+        if str(cList[0].get_date()) == str(cal.getDate()):
+            for avail in availability:
+                if str(avail.getIDCalendar()) == str(cal.getIDCalendar()) and str(currentDoctor.getDoctorID()) == str(avail.getIDDoctor()) and str(avail.getAvail()) != str(0):
+                    print(str(avail.getIDAvail()) + " " + str(cal.getTime()) + " " + str(avail.getAvail()))
+                    dateConfirm = Button(window, text="Confirm Time: " + str(cal.getTime()), command=lambda x=cal, y=avail: finalizeAppointment(x, y))
+                    dateConfirm.grid(row=count, column=0)
+                    bList.append(dateConfirm)
+                    count = count + 1
+    cancelButton = Button(window, text="Cancel", command=showDCalendar)
+    cancelButton.grid(row=count, column=0)
+    bList.append(cancelButton)
+
+def finalizeAppointment(cal, avail):
+    global currentDate
+    currentDate = cal
+
+    global currentAvail
+    currentAvail = avail
+
+    currentAvail.setAvail(0)
+
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    strOp = [
+        "New Appointment",
+        "Follow-up"
+    ]
+    str1 = StringVar()
+    str1.set(strOp[0])
+    dateLabel = Label(window, text=str(currentDate.getDate()))
+    dateLabel.grid(row=0, column=0)
+
+    timeLabel = Label(window, text=str(currentDate.getTime()))
+    timeLabel.grid(row=1, column=0)
+
+    doctorLabel = Label(window, text=str(currentDoctor.getName()) + "\nSpecialty: " + str(currentDoctor.getSpecialty()))
+    doctorLabel.grid(row=2, column=0)
+
+    reasonDrop = OptionMenu(window, str1, *strOp)
+    reasonDrop.grid(row=3, column=0)
+
+    textbox = Text(window, height=5, width=52)
+    textbox.grid(row=4, column=0)
+
+    confirm = Button(window, text="Confirm", command=lambda x=str1, y=textbox: showConfirm(x, y))
+    confirm.grid(row=5, column=0)
+
+
+def showConfirm(drop, text):
+    connectSQL()
+    sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
+    val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
+    cursor = connector.cursor()
+    cursor.execute(sql, val)
+
+    connector.commit()
+
+    sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
+    val = (currentAvail.getAvail(), currentAvail.getIDAvail())
+    cursor.execute(sql, val)
+    connector.commit()
+
+    cursor.close()
+    closeSQL()
+
+    patientView()
+
 
 def confirmSpecialty(tree):
     temp = tree.selection()[0]
@@ -442,7 +658,41 @@ def confirmSpecialty(tree):
             if doctor.getDoctorID() == id and tree.item(temp)['values'][1] == str(doctor.getName()) and tree.item(temp)['values'][0] == str(doctor.getSpecialty()):
                 global currentDoctor
                 currentDoctor = doctor
-                print(doctor.getName() + " " + doctor.getSpecialty())
+                showSCalendar()
+
+def showSCalendar():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    cList.clear()
+    dmax = date.today() + timedelta(days=365)
+    cal = Calendar(window, selectmode="day", mindate=date.today() + timedelta(days=1), maxdate=dmax, date_pattern="yyyy-mm-dd", disableddaybackground="grey", locale="en_US")
+    cal.grid(row=0, column=0)
+    cList.append(cal)
+
+    dateConfirm = Button(window, text="Confirm Date", command=confirmDate)
+    dateConfirm.grid(row=1, column=1)
+    bList.append(dateConfirm)
+
+    cancelButton = Button(window, text="Cancel", command=lambda x=0: calCancel(x))
+    cancelButton.grid(row=3, column=0)
+    bList.append(cancelButton)
 
 def viewAppointments():
     for i in range(0, len(bList)):
@@ -965,21 +1215,30 @@ def main():
     global employees
     global idList
     global search
-    connectSQL()
+    global availability
+    global currentAvail
+    global calendars
+    global currentCal
+    global cList
+    global currentDate
+    cList = []
+    calendars = []
+    availability = []
     patient = []
     doctors = []
     employees = []
     idList = []
+    connectSQL()
     getPatients()
     getDoctors()
     getEmployees()
+    getAvailability()
+    getCalendar()
     closeSQL()
     username = StringVar()
     passww = StringVar()
     window.title("Hospital Scheduling System")
     mainWindow()
-    print(patient[0].getUsername())
-    print(patient[0].getPassword())
     window.mainloop()
 
 

@@ -8,6 +8,6 @@ class Patient(Account):
         self.status = status # boolean
         self.insuranceType = insuranceType # string
 
-    def pastVisits(self):
-        return None
+    def getPatientID(self):
+        return self.patientID
 
