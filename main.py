@@ -546,7 +546,7 @@ def showDCalendar():
     bList.append(dateConfirm)
 
     cancelButton = Button(window, text="Cancel", command=lambda x=1: calCancel(x))
-    cancelButton.grid(row=3, column=0)
+    cancelButton.grid(row=1, column=0)
     bList.append(cancelButton)
 
 def calCancel(num):
@@ -667,8 +667,12 @@ def finalizeAppointment(cal, avail):
     global currentText
     currentText = textbox
 
+    cancel = Button(window, text="Cancel", command=confirmDate)
+    cancel.grid(row=5, column=0)
+    bList.append(cancel)
+
     confirm = Button(window, text="Confirm", command=lambda x=str1, y=textbox: showConfirm(x, y))
-    confirm.grid(row=5, column=0)
+    confirm.grid(row=5, column=1)
     bList.append(confirm)
 
 def showConfirm(drop, text):
@@ -741,13 +745,112 @@ def showSCalendar():
     cal.grid(row=0, column=0)
     cList.append(cal)
 
-    dateConfirm = Button(window, text="Confirm Date", command=confirmDate)
+    dateConfirm = Button(window, text="Confirm Date", command=confirmSDate)
     dateConfirm.grid(row=1, column=1)
     bList.append(dateConfirm)
 
     cancelButton = Button(window, text="Cancel", command=lambda x=0: calCancel(x))
-    cancelButton.grid(row=3, column=0)
+    cancelButton.grid(row=1, column=0)
     bList.append(cancelButton)
+
+def confirmSDate():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    count = 0
+    for cal in calendars:
+        if str(cList[0].get_date()) == str(cal.getDate()):
+            for avail in availability:
+                if str(avail.getIDCalendar()) == str(cal.getIDCalendar()) and str(currentDoctor.getDoctorID()) == str(avail.getIDDoctor()) and str(avail.getAvail()) != str(0):
+                    print(str(avail.getIDAvail()) + " " + str(cal.getTime()) + " " + str(avail.getAvail()))
+                    dateConfirm = Button(window, text="Confirm Time: " + str(cal.getTime()), command=lambda x=cal, y=avail: finalizeSAppointment(x, y))
+                    dateConfirm.grid(row=count, column=0)
+                    bList.append(dateConfirm)
+                    count = count + 1
+    cancelButton = Button(window, text="Cancel", command=showSCalendar)
+    cancelButton.grid(row=count, column=0)
+    bList.append(cancelButton)
+
+def finalizeSAppointment(cal, avail):
+    global currentDate
+    currentDate = cal
+
+    global currentAvail
+    currentAvail = avail
+
+    currentAvail.setAvail(0)
+
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    strOp = [
+        "New Appointment",
+        "Follow-up"
+    ]
+    str1 = StringVar()
+    str1.set(strOp[0])
+    dateLabel = Label(window, text=str(currentDate.getDate()))
+    dateLabel.grid(row=0, column=0)
+    lList.append(dateLabel)
+
+    timeLabel = Label(window, text=str(currentDate.getTime()))
+    timeLabel.grid(row=1, column=0)
+    lList.append(timeLabel)
+
+    doctorLabel = Label(window, text=str(currentDoctor.getName()) + "\nSpecialty: " + str(currentDoctor.getSpecialty()))
+    doctorLabel.grid(row=2, column=0)
+    lList.append(doctorLabel)
+
+    reasonDrop = OptionMenu(window, str1, *strOp)
+    reasonDrop.grid(row=3, column=0)
+    global currentDrop
+    currentDrop = reasonDrop
+
+    textbox = Text(window, height=5, width=52)
+    textbox.grid(row=4, column=0)
+    global currentText
+    currentText = textbox
+
+    cancel = Button(window, text="Cancel", command=confirmSDate)
+    cancel.grid(row=5, column=0)
+    bList.append(cancel)
+
+    confirm = Button(window, text="Confirm", command=lambda x=str1, y=textbox: showConfirm(x, y))
+    confirm.grid(row=5, column=1)
+    bList.append(confirm)
 
 
 def viewAppointments():
@@ -793,11 +896,12 @@ def viewAppointments():
     cancelButton.grid(row=2, column=0)
     bList.append(cancelButton)
 
-    editButton = Button(window, text="Remove Appointment", command=lambda x=appointTree: removeAppointment(x))
+    editButton = Button(window, text="Remove Appointment", command=lambda x=appointTree, y=0: removeAppointment(x, y))
     editButton.grid(row=2, column=1)
     bList.append(editButton)
 
-def removeAppointment(tree):
+
+def removeAppointment(tree, num):
     try:
         answer = tkinter.messagebox.askyesno("Confirm?", "Remove the selected appointment?")
         temp = tree.selection()[0]
@@ -830,7 +934,12 @@ def removeAppointment(tree):
             cursor.close()
             closeSQL()
 
-            patientView()
+            if num == 0:
+                patientView()
+            elif num == 1:
+                doctorView()
+            else:
+                clerkView()
     except IndexError:
         tkinter.messagebox.showerror("Error", "No Selection Made")
 
@@ -861,6 +970,7 @@ def employeeCheck(username, password):
 
 def doctorView():
     window.unbind_all('<Return>')
+    updateLists()
 
     w = 325
     h = 100
@@ -924,12 +1034,19 @@ def viewDoctorAppointments():
     headerLabel.grid(row=0, column=0)
     lList.append(headerLabel)
 
-    cols = ("Date", "Name")
+    cols = ("Appointment Number", "Date", "Time", "Patient Name", "Appointment Type", "Reason")
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Appointment Number", text="Appointment Number", anchor=tkinter.CENTER)
     appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
-    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
-    appointTree.insert("", tkinter.END, values=("12/15/22", "Timmy Jones"))
-    appointTree.insert("", tkinter.END, values=("12/20/22", "Kimberly Kwan"))
+    appointTree.heading("Time", text="Time", anchor=tkinter.CENTER)
+    appointTree.heading("Patient Name", text="Patient Name", anchor=tkinter.CENTER)
+    appointTree.heading("Appointment Type", text="Appointment Type", anchor=tkinter.CENTER)
+    appointTree.heading("Reason", text="Reason", anchor=tkinter.CENTER)
+    for appointment in appointments:
+        for cal in calendars:
+            for pat in patient:
+                if str(appointment.getIDCalendar()) == str(cal.getIDCalendar()) and str(appointment.getIDDoctor()) == str(currentDoctor.getDoctorID()) and str(appointment.getPatientID()) == str(pat.getPatientID()):
+                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(pat.getName()), str(appointment.getType()), str(appointment.getReason())))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
@@ -937,14 +1054,14 @@ def viewDoctorAppointments():
     cancelButton.grid(row=2, column=0)
     bList.append(cancelButton)
 
-    editButton = Button(window, text="Edit Appointment")
+    editButton = Button(window, text="Remove Appointment", command=lambda x=appointTree, y=1: removeAppointment(x, y))
     editButton.grid(row=2, column=1)
     bList.append(editButton)
 
 
 def clerkView():
     window.unbind_all('<Return>')
-
+    updateLists()
     w = 400
     h = 100
     sw = window.winfo_screenwidth()
@@ -1013,8 +1130,8 @@ def selectMAPatient():
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     appointTree.heading("Patient ID", text="Patient ID", anchor=tkinter.CENTER)
     appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
-    appointTree.insert("", tkinter.END, values=("1", "Timmy Jones"))
-    appointTree.insert("", tkinter.END, values=("2", "Kimberly Kwan"))
+    for pat in patient:
+        appointTree.insert("", tkinter.END, values=(pat.getPatientID(), pat.getName()))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
@@ -1029,7 +1146,11 @@ def selectMAPatient():
 
 def getMAPatient(tree):
     temp = tree.selection()[0]
-    makePatientAppointment(tree.item(temp)['values'][0])
+    for pat in patient:
+        if str(pat.getPatientID()) == str(tree.item(temp)['values'][0]):
+            global currentPatient
+            currentPatient = pat
+    makePatientAppointment()
 
 def selectVAPatient():
     for i in range(0, len(bList)):
@@ -1057,8 +1178,8 @@ def selectVAPatient():
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     appointTree.heading("Patient ID", text="Patient ID", anchor=tkinter.CENTER)
     appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
-    appointTree.insert("", tkinter.END, values=("1", "Timmy Jones"))
-    appointTree.insert("", tkinter.END, values=("2", "Kimberly Kwan"))
+    for pat in patient:
+        appointTree.insert("", tkinter.END, values=(pat.getPatientID(), pat.getName()))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
@@ -1072,9 +1193,13 @@ def selectVAPatient():
 
 def getVAPatient(tree):
     temp = tree.selection()[0]
-    viewPatientAppointments(tree.item(temp)['values'][0])
+    for pat in patient:
+        if str(pat.getPatientID()) == str(tree.item(temp)['values'][0]):
+            global currentPatient
+            currentPatient = pat
+    viewPatientAppointments()
 
-def makePatientAppointment(patientID):
+def makePatientAppointment():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1092,15 +1217,15 @@ def makePatientAppointment(patientID):
     bList.clear()
     eList.clear()
 
-    headLabel = Label(window, text="Make an Appointment for " + str(patientID))
+    headLabel = Label(window, text="Make an Appointment for " + str(currentPatient.getName()))
     headLabel.grid(row=0, column=0)
     lList.append(headLabel)
 
-    searchDocButton = Button(window, text="Search Doctors", command=lambda a=patientID: searchPatientDoctor(a))
+    searchDocButton = Button(window, text="Search Doctors", command=searchPatientDoctor)
     searchDocButton.grid(row=1, column=0)
     bList.append(searchDocButton)
 
-    searchSpecButton = Button(window, text="Search Specialty", command=lambda a=patientID: searchPatientSpecialty(a))
+    searchSpecButton = Button(window, text="Search Specialty", command=searchPatientSpecialty)
     searchSpecButton.grid(row=2, column=0)
     bList.append(searchSpecButton)
 
@@ -1109,7 +1234,7 @@ def makePatientAppointment(patientID):
     bList.append(cancelButton)
 
 
-def searchPatientDoctor(patientID):
+def searchPatientDoctor():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1126,6 +1251,7 @@ def searchPatientDoctor(patientID):
     tList.clear()
     bList.clear()
     eList.clear()
+    idList.clear()
 
     headerLabel = Label(window, text="Search for Doctor")
     headerLabel.grid(row=0, column=0)
@@ -1135,20 +1261,238 @@ def searchPatientDoctor(patientID):
     doctorTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     doctorTree.heading("Name", text="Name", anchor=tkinter.CENTER)
     doctorTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
-    doctorTree.insert("", tkinter.END, values=("John Doe", "General Practioner"))
-    doctorTree.insert("", tkinter.END, values=("Jane Smith", "Surgeon"))
+    for doctor in doctors:
+        idList.append(doctor.getDoctorID())
+        doctorTree.insert("", tkinter.END, values=(doctor.getName(), doctor.getSpecialty()))
     doctorTree.grid(row=1, column=0, columnspan=2)
     tList.append(doctorTree)
 
-    cancelButton = Button(window, text="Cancel", command=selectMAPatient)
-    cancelButton.grid(row=2, column=0)
+    searchLabel = Label(window, text="Search Name")
+    searchLabel.grid(row=2, column=0)
+    lList.append(searchLabel)
+    global search
+    search = StringVar()
+    search.set("")
+
+    searchEntry = Entry(window, textvariable=search)
+    searchEntry.grid(row=2, column=1)
+    eList.append(searchEntry)
+
+    updateButton = Button(window, text="Update Search", command=lambda x=doctorTree, y=search: searchDoctorUpdate(x, y))
+    updateButton.grid(row=2, column=2)
+    bList.append(updateButton)
+
+    cancelButton = Button(window, text="Cancel", command=clerkView)
+    cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
 
-    confirmButton = Button(window, text="Confirm")
-    confirmButton.grid(row=2, column=1)
+    confirmButton = Button(window, text="Confirm", command=lambda x=doctorTree: confirmCDoctor(x))
+    confirmButton.grid(row=3, column=1)
     bList.append(confirmButton)
 
-def searchPatientSpecialty(PatientID):
+
+def confirmCDoctor(tree):
+    try:
+        temp = tree.selection()[0]
+        for doctor in doctors:
+            for id in idList:
+                if doctor.getDoctorID() == id and tree.item(temp)['values'][0] == str(doctor.getName()) and tree.item(temp)['values'][1] == str(doctor.getSpecialty()):
+                    global currentDoctor
+                    currentDoctor = doctor
+                    showDCCalendar()
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
+
+
+def showDCCalendar():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    cList.clear()
+    dmax = date.today() + timedelta(days=365)
+    cal = Calendar(window, selectmode="day", mindate=date.today() + timedelta(days=1), maxdate=dmax, date_pattern="yyyy-mm-dd", disableddaybackground="grey", locale="en_US")
+    cal.grid(row=0, column=0)
+    cList.append(cal)
+
+    dateConfirm = Button(window, text="Confirm Date", command=confirmCDate)
+    dateConfirm.grid(row=1, column=1)
+    bList.append(dateConfirm)
+
+    cancelButton = Button(window, text="Cancel", command=lambda x=0: calCCancel(x))
+    cancelButton.grid(row=1, column=0)
+    bList.append(cancelButton)
+
+def calCCancel(num):
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    cList.clear()
+
+    if num != 0:
+        searchPatientSpecialty()
+    else:
+        searchPatientDoctor()
+
+def confirmCDate():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    count = 0
+    for cal in calendars:
+        if str(cList[0].get_date()) == str(cal.getDate()):
+            for avail in availability:
+                if str(avail.getIDCalendar()) == str(cal.getIDCalendar()) and str(currentDoctor.getDoctorID()) == str(avail.getIDDoctor()) and str(avail.getAvail()) != str(0):
+                    print(str(avail.getIDAvail()) + " " + str(cal.getTime()) + " " + str(avail.getAvail()))
+                    dateConfirm = Button(window, text="Confirm Time: " + str(cal.getTime()), command=lambda x=cal, y=avail: finalizeCAppointment(x, y))
+                    dateConfirm.grid(row=count, column=0)
+                    bList.append(dateConfirm)
+                    count = count + 1
+    cancelButton = Button(window, text="Cancel", command=showDCCalendar)
+    cancelButton.grid(row=count, column=0)
+    bList.append(cancelButton)
+
+def finalizeCAppointment(cal, avail):
+    global currentDate
+    currentDate = cal
+
+    global currentAvail
+    currentAvail = avail
+
+    currentAvail.setAvail(0)
+
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    strOp = [
+        "New Appointment",
+        "Follow-up"
+    ]
+    str1 = StringVar()
+    str1.set(strOp[0])
+    dateLabel = Label(window, text=str(currentDate.getDate()))
+    dateLabel.grid(row=0, column=0)
+    lList.append(dateLabel)
+
+    timeLabel = Label(window, text=str(currentDate.getTime()))
+    timeLabel.grid(row=1, column=0)
+    lList.append(timeLabel)
+
+    doctorLabel = Label(window, text=str(currentDoctor.getName()) + "\nSpecialty: " + str(currentDoctor.getSpecialty()))
+    doctorLabel.grid(row=2, column=0)
+    lList.append(doctorLabel)
+
+    reasonDrop = OptionMenu(window, str1, *strOp)
+    reasonDrop.grid(row=3, column=0)
+    global currentDrop
+    currentDrop = reasonDrop
+
+    textbox = Text(window, height=5, width=52)
+    textbox.grid(row=4, column=0)
+    global currentText
+    currentText = textbox
+
+    confirm = Button(window, text="Confirm", command=lambda x=str1, y=textbox: showCConfirm(x, y))
+    confirm.grid(row=5, column=0)
+    bList.append(confirm)
+
+def showCConfirm(drop, text):
+    global currentDrop
+    global currentText
+
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    forgetWidget(currentDrop)
+    forgetWidget(currentText)
+
+    connectSQL()
+    sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
+    val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
+    cursor = connector.cursor()
+    cursor.execute(sql, val)
+
+    connector.commit()
+
+    sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
+    val = (currentAvail.getAvail(), currentAvail.getIDAvail())
+    cursor.execute(sql, val)
+    connector.commit()
+
+    cursor.close()
+    closeSQL()
+
+    clerkView()
+
+
+def searchPatientSpecialty():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1165,6 +1509,7 @@ def searchPatientSpecialty(PatientID):
     tList.clear()
     bList.clear()
     eList.clear()
+    idList.clear()
 
     headerLabel = Label(window, text="Search for Specialty")
     headerLabel.grid(row=0, column=0)
@@ -1174,21 +1519,185 @@ def searchPatientSpecialty(PatientID):
     specTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     specTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
     specTree.heading("Name", text="Name", anchor=tkinter.CENTER)
-    specTree.insert("", tkinter.END, values=("General Practioner", "John Doe"))
-    specTree.insert("", tkinter.END, values=("Surgeon", "Jane Smith"))
+    for doctor in doctors:
+        idList.append(doctor.getDoctorID())
+        specTree.insert("", tkinter.END, values=(doctor.getSpecialty(), doctor.getName()))
     specTree.grid(row=1, column=0, columnspan=2)
     tList.append(specTree)
 
-    cancelButton = Button(window, text="Cancel", command=selectMAPatient)
-    cancelButton.grid(row=2, column=0)
+    searchLabel = Label(window, text="Search Specialty")
+    searchLabel.grid(row=2, column=0)
+    lList.append(searchLabel)
+
+    global search
+    search = StringVar()
+    search.set("")
+
+    searchEntry = Entry(window, textvariable=search)
+    searchEntry.grid(row=2, column=1)
+    eList.append(searchEntry)
+
+    updateButton = Button(window, text="Update Search", command=lambda x=specTree, y=search: searchSpecUpdate(x, y))
+    updateButton.grid(row=2, column=2)
+    bList.append(updateButton)
+
+    cancelButton = Button(window, text="Cancel", command=clerkView)
+    cancelButton.grid(row=3, column=0)
     bList.append(cancelButton)
 
-    confirmButton = Button(window, text="Confirm")
-    confirmButton.grid(row=2, column=1)
+    confirmButton = Button(window, text="Confirm", command=lambda x=specTree: confirmCSpecialty(x))
+    confirmButton.grid(row=3, column=1)
     bList.append(confirmButton)
 
 
-def viewPatientAppointments(patientID):
+def confirmCSpecialty(tree):
+    try:
+        temp = tree.selection()[0]
+        for doctor in doctors:
+            for id in idList:
+                if doctor.getDoctorID() == id and tree.item(temp)['values'][1] == str(doctor.getName()) and tree.item(temp)['values'][0] == str(doctor.getSpecialty()):
+                    global currentDoctor
+                    currentDoctor = doctor
+                    showSCCalendar()
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
+
+
+def showSCCalendar():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    cList.clear()
+    dmax = date.today() + timedelta(days=365)
+    cal = Calendar(window, selectmode="day", mindate=date.today() + timedelta(days=1), maxdate=dmax, date_pattern="yyyy-mm-dd", disableddaybackground="grey", locale="en_US")
+    cal.grid(row=0, column=0)
+    cList.append(cal)
+
+    dateConfirm = Button(window, text="Confirm Date", command=confirmSCDate)
+    dateConfirm.grid(row=1, column=1)
+    bList.append(dateConfirm)
+
+    cancelButton = Button(window, text="Cancel", command=lambda x=1: calCCancel(x))
+    cancelButton.grid(row=1, column=0)
+    bList.append(cancelButton)
+
+def confirmSCDate():
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+    count = 0
+    for cal in calendars:
+        if str(cList[0].get_date()) == str(cal.getDate()):
+            for avail in availability:
+                if str(avail.getIDCalendar()) == str(cal.getIDCalendar()) and str(currentDoctor.getDoctorID()) == str(avail.getIDDoctor()) and str(avail.getAvail()) != str(0):
+                    print(str(avail.getIDAvail()) + " " + str(cal.getTime()) + " " + str(avail.getAvail()))
+                    dateConfirm = Button(window, text="Confirm Time: " + str(cal.getTime()), command=lambda x=cal, y=avail: finalizeSCAppointment(x, y))
+                    dateConfirm.grid(row=count, column=0)
+                    bList.append(dateConfirm)
+                    count = count + 1
+    cancelButton = Button(window, text="Cancel", command=showSCCalendar)
+    cancelButton.grid(row=count, column=0)
+    bList.append(cancelButton)
+
+def finalizeSCAppointment(cal, avail):
+    global currentDate
+    currentDate = cal
+
+    global currentAvail
+    currentAvail = avail
+
+    currentAvail.setAvail(0)
+
+    for i in range(0, len(bList)):
+        forgetWidget(bList[i])
+
+    for i in range(0, len(lList)):
+        forgetWidget(lList[i])
+
+    for i in range(0, len(eList)):
+        forgetWidget(eList[i])
+
+    for i in range(0, len(tList)):
+        forgetWidget(tList[i])
+
+    for i in range(0, len(cList)):
+        forgetWidget(cList[i])
+
+    lList.clear()
+    tList.clear()
+    bList.clear()
+    eList.clear()
+
+    strOp = [
+        "New Appointment",
+        "Follow-up"
+    ]
+    str1 = StringVar()
+    str1.set(strOp[0])
+    dateLabel = Label(window, text=str(currentDate.getDate()))
+    dateLabel.grid(row=0, column=0)
+    lList.append(dateLabel)
+
+    timeLabel = Label(window, text=str(currentDate.getTime()))
+    timeLabel.grid(row=1, column=0)
+    lList.append(timeLabel)
+
+    doctorLabel = Label(window, text=str(currentDoctor.getName()) + "\nSpecialty: " + str(currentDoctor.getSpecialty()))
+    doctorLabel.grid(row=2, column=0)
+    lList.append(doctorLabel)
+
+    reasonDrop = OptionMenu(window, str1, *strOp)
+    reasonDrop.grid(row=3, column=0)
+    global currentDrop
+    currentDrop = reasonDrop
+
+    textbox = Text(window, height=5, width=52)
+    textbox.grid(row=4, column=0)
+    global currentText
+    currentText = textbox
+
+    cancel = Button(window, text="Cancel", command=confirmSCDate)
+    cancel.grid(row=5, column=0)
+    bList.append(cancel)
+
+    confirm = Button(window, text="Confirm", command=lambda x=str1, y=textbox: showCConfirm(x, y))
+    confirm.grid(row=5, column=1)
+    bList.append(confirm)
+
+
+def viewPatientAppointments():
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1210,25 +1719,29 @@ def viewPatientAppointments(patientID):
     headerLabel.grid(row=0, column=0)
     lList.append(headerLabel)
 
-    cols = ("Date", "Name", "Specialty")
+    cols = ("Appointment Number", "Date", "Time", "Patient Name", "Doctor Name", "Specialty", "Appointment Type", "Reason")
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
+    appointTree.heading("Appointment Number", text="Appointment Number", anchor=tkinter.CENTER)
     appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
-    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.heading("Time", text="Time", anchor=tkinter.CENTER)
+    appointTree.heading("Patient Name", text="Patient Name", anchor=tkinter.CENTER)
+    appointTree.heading("Doctor Name", text="Doctor Name", anchor=tkinter.CENTER)
     appointTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
-    if patientID == 1:
-        appointTree.insert("", tkinter.END, values=("12/15/22", "John Doe", "General Practioner"))
-        appointTree.insert("", tkinter.END, values=("12/20/22", "Jane Smith", "Surgeon"))
-    else:
-        appointTree.insert("", tkinter.END, values=("12/10/22", "Jane Smith", "Surgeon"))
-        appointTree.insert("", tkinter.END, values=("12/15/22", "Jane Smith", "Surgeon"))
+    appointTree.heading("Appointment Type", text="Appointment Type", anchor=tkinter.CENTER)
+    appointTree.heading("Reason", text="Reason", anchor=tkinter.CENTER)
+    for appointment in appointments:
+        for cal in calendars:
+            for doc in doctors:
+                if str(appointment.getIDCalendar()) == str(cal.getIDCalendar()) and str(appointment.getIDDoctor()) == str(doc.getDoctorID()) and str(appointment.getPatientID()) == str(currentPatient.getPatientID()):
+                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(currentPatient.getName()), str(doc.getName()), str(doc.getSpecialty()), str(appointment.getType()), str(appointment.getReason())))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
-    cancelButton = Button(window, text="Cancel", command=selectVAPatient)
+    cancelButton = Button(window, text="Cancel", command=clerkView)
     cancelButton.grid(row=2, column=0)
     bList.append(cancelButton)
 
-    editButton = Button(window, text="Edit Appointment")
+    editButton = Button(window, text="Remove Appointment", command=lambda x=appointTree, y=2: removeAppointment(x, y))
     editButton.grid(row=2, column=1)
     bList.append(editButton)
 
