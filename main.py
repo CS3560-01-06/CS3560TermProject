@@ -417,7 +417,7 @@ def searchDoctorUpdate(tree, search):
         tree.delete(item)
 
     for doctor in doctors:
-        if str(doctor.getName()) == search.get():
+        if search.get() in str(doctor.getName()) :
             count = count + 1
             idList.append(doctor.getDoctorID())
             tree.insert("", tkinter.END, values=(doctor.getName(), doctor.getSpecialty()))
@@ -492,7 +492,7 @@ def searchSpecUpdate(tree, search):
         tree.delete(item)
 
     for doctor in doctors:
-        if str(doctor.getSpecialty()) == search.get():
+        if search.get() in str(doctor.getSpecialty()):
             count = count + 1
             idList.append(doctor.getDoctorID())
             tree.insert("", tkinter.END, values=(doctor.getSpecialty(), doctor.getName()))
