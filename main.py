@@ -10,8 +10,12 @@ from classes.Availability import Availability
 from classes.Appointment import Appointment
 from classes.Calender import Cal
 import mysql.connector
-from tkcalendar import DateEntry, Calendar
-from datetime import date, timedelta
+from tkcalendar import Calendar
+from datetime import date, timedelta, datetime
+import textwrap
+
+def wrap(string, length=40):
+    return '\n'.join(textwrap.wrap(string, length))
 
 def connectSQL():
     global connector
@@ -135,15 +139,11 @@ def forgetWidget(widget):
 
 
 def mainWindow():
-    w = 400
-    h = 150
-    sw = window.winfo_screenwidth()
-    sh = window.winfo_screenheight()
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
 
-    x = (sw / 2) - (w / 2)
-    y = (sh / 2) - (h / 2)
-
-    window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    style = ttk.Style()
+    style.configure('Treeview', rowheight=50)
 
     label = Label(window, text="Hospital Login")
     label.grid(row=0, column=0)
@@ -160,15 +160,8 @@ def mainWindow():
 
 
 def employeeLogin():
-    w = 225
-    h = 100
-    sw = window.winfo_screenwidth()
-    sh = window.winfo_screenheight()
-
-    x = (sw / 2) - (w / 2)
-    y = (sh / 2) - (h / 2)
-
-    window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
 
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
@@ -210,15 +203,8 @@ def employeeLogin():
 
 
 def patientLogin():
-    w = 225
-    h = 100
-    sw = window.winfo_screenwidth()
-    sh = window.winfo_screenheight()
-
-    x = (sw / 2) - (w / 2)
-    y = (sh / 2) - (h / 2)
-
-    window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
 
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
@@ -279,15 +265,8 @@ def patientCheck(username, password):
 def patientView():
     updateLists()
 
-    w = 325
-    h = 100
-    sw = window.winfo_screenwidth()
-    sh = window.winfo_screenheight()
-
-    x = (sw / 2) - (w / 2)
-    y = (sh / 2) - (h / 2)
-
-    window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
 
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
@@ -323,6 +302,9 @@ def patientView():
     window.unbind_all('<Return>')
 
 def makeAppointment():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -354,6 +336,9 @@ def makeAppointment():
 
 
 def searchDoctor():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -429,6 +414,9 @@ def searchDoctorUpdate(tree, search):
 
 
 def searchSpecialty():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -516,6 +504,9 @@ def confirmDoctor(tree):
 
 
 def showDCalendar():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -536,7 +527,7 @@ def showDCalendar():
     bList.clear()
     eList.clear()
     cList.clear()
-    dmax = date.today() + timedelta(days=365)
+    dmax = date(2022, 11, 15) + timedelta(days=365)
     cal = Calendar(window, selectmode="day", mindate=date.today() + timedelta(days=1), maxdate=dmax, date_pattern="yyyy-mm-dd", disableddaybackground="grey", locale="en_US")
     cal.grid(row=0, column=0)
     cList.append(cal)
@@ -550,6 +541,9 @@ def showDCalendar():
     bList.append(cancelButton)
 
 def calCancel(num):
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -577,6 +571,9 @@ def calCancel(num):
         searchDoctor()
 
 def confirmDate():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -611,6 +608,9 @@ def confirmDate():
     bList.append(cancelButton)
 
 def finalizeAppointment(cal, avail):
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     global currentDate
     currentDate = cal
 
@@ -679,32 +679,35 @@ def showConfirm(drop, text):
     global currentDrop
     global currentText
 
-    for i in range(0, len(bList)):
-        forgetWidget(bList[i])
+    try:
+        for i in range(0, len(bList)):
+            forgetWidget(bList[i])
 
-    for i in range(0, len(lList)):
-        forgetWidget(lList[i])
+        for i in range(0, len(lList)):
+            forgetWidget(lList[i])
 
-    forgetWidget(currentDrop)
-    forgetWidget(currentText)
+        forgetWidget(currentDrop)
+        forgetWidget(currentText)
 
-    connectSQL()
-    sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
-    val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
-    cursor = connector.cursor()
-    cursor.execute(sql, val)
+        connectSQL()
+        sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
+        val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
+        cursor = connector.cursor()
+        cursor.execute(sql, val)
 
-    connector.commit()
+        connector.commit()
 
-    sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
-    val = (currentAvail.getAvail(), currentAvail.getIDAvail())
-    cursor.execute(sql, val)
-    connector.commit()
+        sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
+        val = (currentAvail.getAvail(), currentAvail.getIDAvail())
+        cursor.execute(sql, val)
+        connector.commit()
 
-    cursor.close()
-    closeSQL()
+        cursor.close()
+        closeSQL()
 
-    patientView()
+        patientView()
+    except len(currentText.get("1.0", "end-1c")) > 99:
+        tkinter.messagebox.showerror("Error", "Max Length 100 characters")
 
 
 def confirmSpecialty(tree):
@@ -720,6 +723,9 @@ def confirmSpecialty(tree):
         tkinter.messagebox.showerror("Error", "No Selection Made")
 
 def showSCalendar():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -788,6 +794,9 @@ def confirmSDate():
     bList.append(cancelButton)
 
 def finalizeSAppointment(cal, avail):
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     global currentDate
     currentDate = cal
 
@@ -854,6 +863,9 @@ def finalizeSAppointment(cal, avail):
 
 
 def viewAppointments():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -874,22 +886,28 @@ def viewAppointments():
     headerLabel = Label(window, text="View Appointments")
     headerLabel.grid(row=0, column=0)
     lList.append(headerLabel)
-
-    cols = ("Appointment Number", "Date", "Time", "Name", "Specialty", "Appointment Type", "Reason")
+    cols = ("Appointment Number", "Date", "Time", "Doctor Name", "Specialty", "Appointment Type", "Reason")
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     appointTree.heading("Appointment Number", text="Appointment Number", anchor=tkinter.CENTER)
+    appointTree.column("Appointment Number", minwidth=150, width=150)
     appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.column("Date", minwidth=75, width=75)
     appointTree.heading("Time", text="Time", anchor=tkinter.CENTER)
-    appointTree.heading("Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.column("Time", minwidth=75, width=75)
+    appointTree.heading("Doctor Name", text="Name", anchor=tkinter.CENTER)
+    appointTree.column("Doctor Name", minwidth=150, width=150)
     appointTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    appointTree.column("Specialty", minwidth=100, width=100)
     appointTree.heading("Appointment Type", text="Appointment Type", anchor=tkinter.CENTER)
+    appointTree.column("Appointment Type", minwidth=150, width=150)
     appointTree.heading("Reason", text="Reason", anchor=tkinter.CENTER)
+    appointTree.column("Reason", minwidth=200, width=200)
     for appointment in appointments:
         for cal in calendars:
             for doc in doctors:
                 if str(appointment.getIDCalendar()) == str(cal.getIDCalendar()) and str(appointment.getIDDoctor()) == str(doc.getDoctorID()) and str(appointment.getPatientID()) == str(currentPatient.getPatientID()):
-                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(doc.getName()), str(doc.getSpecialty()), str(appointment.getType()), str(appointment.getReason())))
-    appointTree.grid(row=1, column=0, columnspan=2)
+                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(doc.getName()), str(doc.getSpecialty()), str(appointment.getType()), wrap(str(appointment.getReason()))))
+    appointTree.grid(row=1, column=0)
     tList.append(appointTree)
 
     cancelButton = Button(window, text="Cancel", command=patientView)
@@ -903,46 +921,49 @@ def viewAppointments():
 
 def removeAppointment(tree, num):
     try:
-        answer = tkinter.messagebox.askyesno("Confirm?", "Remove the selected appointment?")
         temp = tree.selection()[0]
-        global currentAvail
-        global currentAppointment
-        if answer:
-            for appointment in appointments:
-                if str(tree.item(temp)['values'][0]) == str(appointment.getIDAppointment()):
-                    currentAppointment = appointment
 
-            for avail in availability:
-                if str(currentAppointment.getIDCalendar()) == str(avail.getIDCalendar()) and str(
-                        currentAppointment.getIDDoctor()) == str(avail.getIDDoctor()):
-                            currentAvail = avail
-                            currentAvail.setAvail(1)
+        try:
+            answer = tkinter.messagebox.askyesno("Confirm?", "Remove the selected appointment?")
+            global currentAvail
+            global currentAppointment
+            if answer:
+                for appointment in appointments:
+                    if str(tree.item(temp)['values'][0]) == str(appointment.getIDAppointment()):
+                        currentAppointment = appointment
 
-            connectSQL()
-            cursor = connector.cursor()
+                for avail in availability:
+                    if str(currentAppointment.getIDCalendar()) == str(avail.getIDCalendar()) and str(
+                            currentAppointment.getIDDoctor()) == str(avail.getIDDoctor()):
+                                currentAvail = avail
+                                currentAvail.setAvail(1)
 
-            sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
-            val = (currentAvail.getAvail(), currentAvail.getIDAvail())
-            cursor.execute(sql, val)
-            connector.commit()
+                connectSQL()
+                cursor = connector.cursor()
 
-            sql = "DELETE FROM Appointment WHERE idDoctor = %s and idCalendar = %s and idPatient = %s"
-            val = (currentAppointment.getIDDoctor(), currentAppointment.getIDCalendar(), currentAppointment.getPatientID())
-            cursor.execute(sql, val)
-            connector.commit()
+                sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
+                val = (currentAvail.getAvail(), currentAvail.getIDAvail())
+                cursor.execute(sql, val)
+                connector.commit()
 
-            cursor.close()
-            closeSQL()
+                sql = "DELETE FROM Appointment WHERE idDoctor = %s and idCalendar = %s and idPatient = %s"
+                val = (currentAppointment.getIDDoctor(), currentAppointment.getIDCalendar(), currentAppointment.getPatientID())
+                cursor.execute(sql, val)
+                connector.commit()
 
-            if num == 0:
-                patientView()
-            elif num == 1:
-                doctorView()
-            else:
-                clerkView()
+                cursor.close()
+                closeSQL()
+
+                if num == 0:
+                    patientView()
+                elif num == 1:
+                    doctorView()
+                else:
+                    clerkView()
+        except datetime.strptime(str(tree.item(temp)['values'][1]), '%Y-%m-%m').date() < date.today():
+            tkinter.messagebox.showerror("Error", "Appointment Already Passed")
     except IndexError:
         tkinter.messagebox.showerror("Error", "No Selection Made")
-
 
 def employeeCheck(username, password):
     count = 0
@@ -972,15 +993,8 @@ def doctorView():
     window.unbind_all('<Return>')
     updateLists()
 
-    w = 325
-    h = 100
-    sw = window.winfo_screenwidth()
-    sh = window.winfo_screenheight()
-
-    x = (sw / 2) - (w / 2)
-    y = (sh / 2) - (h / 2)
-
-    window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
 
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
@@ -1013,6 +1027,9 @@ def doctorView():
 
 
 def viewDoctorAppointments():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1037,16 +1054,22 @@ def viewDoctorAppointments():
     cols = ("Appointment Number", "Date", "Time", "Patient Name", "Appointment Type", "Reason")
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     appointTree.heading("Appointment Number", text="Appointment Number", anchor=tkinter.CENTER)
+    appointTree.column("Appointment Number", minwidth=150, width=150)
     appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.column("Date", minwidth=75, width=75)
     appointTree.heading("Time", text="Time", anchor=tkinter.CENTER)
+    appointTree.column("Time", minwidth=75, width=75)
     appointTree.heading("Patient Name", text="Patient Name", anchor=tkinter.CENTER)
+    appointTree.column("Patient Name", minwidth=150, width=150)
     appointTree.heading("Appointment Type", text="Appointment Type", anchor=tkinter.CENTER)
+    appointTree.column("Appointment Type", minwidth=150, width=150)
     appointTree.heading("Reason", text="Reason", anchor=tkinter.CENTER)
+    appointTree.column("Reason", minwidth=200, width=200)
     for appointment in appointments:
         for cal in calendars:
             for pat in patient:
                 if str(appointment.getIDCalendar()) == str(cal.getIDCalendar()) and str(appointment.getIDDoctor()) == str(currentDoctor.getDoctorID()) and str(appointment.getPatientID()) == str(pat.getPatientID()):
-                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(pat.getName()), str(appointment.getType()), str(appointment.getReason())))
+                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(pat.getName()), str(appointment.getType()), wrap(str(appointment.getReason()))))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
@@ -1062,15 +1085,8 @@ def viewDoctorAppointments():
 def clerkView():
     window.unbind_all('<Return>')
     updateLists()
-    w = 400
-    h = 100
-    sw = window.winfo_screenwidth()
-    sh = window.winfo_screenheight()
-
-    x = (sw / 2) - (w / 2)
-    y = (sh / 2) - (h / 2)
-
-    window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
 
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
@@ -1105,6 +1121,9 @@ def clerkView():
 
 
 def selectMAPatient():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1145,14 +1164,20 @@ def selectMAPatient():
 
 
 def getMAPatient(tree):
-    temp = tree.selection()[0]
-    for pat in patient:
-        if str(pat.getPatientID()) == str(tree.item(temp)['values'][0]):
-            global currentPatient
-            currentPatient = pat
-    makePatientAppointment()
+    try:
+        temp = tree.selection()[0]
+        for pat in patient:
+            if str(pat.getPatientID()) == str(tree.item(temp)['values'][0]):
+                global currentPatient
+                currentPatient = pat
+        makePatientAppointment()
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
 
 def selectVAPatient():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1192,14 +1217,20 @@ def selectVAPatient():
     bList.append(confirmButton)
 
 def getVAPatient(tree):
-    temp = tree.selection()[0]
-    for pat in patient:
-        if str(pat.getPatientID()) == str(tree.item(temp)['values'][0]):
-            global currentPatient
-            currentPatient = pat
-    viewPatientAppointments()
+    try:
+        temp = tree.selection()[0]
+        for pat in patient:
+            if str(pat.getPatientID()) == str(tree.item(temp)['values'][0]):
+                global currentPatient
+                currentPatient = pat
+        viewPatientAppointments()
+    except IndexError:
+        tkinter.messagebox.showerror("Error", "No Selection Made")
 
 def makePatientAppointment():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1235,6 +1266,9 @@ def makePatientAppointment():
 
 
 def searchPatientDoctor():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1305,6 +1339,9 @@ def confirmCDoctor(tree):
 
 
 def showDCCalendar():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1366,6 +1403,9 @@ def calCCancel(num):
         searchPatientDoctor()
 
 def confirmCDate():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1400,6 +1440,9 @@ def confirmCDate():
     bList.append(cancelButton)
 
 def finalizeCAppointment(cal, avail):
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     global currentDate
     currentDate = cal
 
@@ -1464,35 +1507,40 @@ def showCConfirm(drop, text):
     global currentDrop
     global currentText
 
-    for i in range(0, len(bList)):
-        forgetWidget(bList[i])
+    try:
+        for i in range(0, len(bList)):
+            forgetWidget(bList[i])
 
-    for i in range(0, len(lList)):
-        forgetWidget(lList[i])
+        for i in range(0, len(lList)):
+            forgetWidget(lList[i])
 
-    forgetWidget(currentDrop)
-    forgetWidget(currentText)
+        forgetWidget(currentDrop)
+        forgetWidget(currentText)
 
-    connectSQL()
-    sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
-    val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
-    cursor = connector.cursor()
-    cursor.execute(sql, val)
+        connectSQL()
+        sql = "INSERT IGNORE INTO Appointment (idCalendar, idDoctor, idPatient, appointmentType, reason) VALUES (%s, %s, %s, %s, %s)"
+        val = (currentDate.getIDCalendar(), currentDoctor.getDoctorID(), currentPatient.getPatientID(), drop.get(), text.get("1.0", "end-1c"))
+        cursor = connector.cursor()
+        cursor.execute(sql, val)
 
-    connector.commit()
+        connector.commit()
 
-    sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
-    val = (currentAvail.getAvail(), currentAvail.getIDAvail())
-    cursor.execute(sql, val)
-    connector.commit()
+        sql = "UPDATE Availability SET isAvailable = %s WHERE idAvailability = %s"
+        val = (currentAvail.getAvail(), currentAvail.getIDAvail())
+        cursor.execute(sql, val)
+        connector.commit()
 
-    cursor.close()
-    closeSQL()
+        cursor.close()
+        closeSQL()
 
-    clerkView()
-
+        clerkView()
+    except len(currentText.get("1.0", "end-1c")) > 99:
+        tkinter.messagebox.showerror("Error", "Max Character length 100")
 
 def searchPatientSpecialty():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1564,6 +1612,9 @@ def confirmCSpecialty(tree):
 
 
 def showSCCalendar():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1598,6 +1649,9 @@ def showSCCalendar():
     bList.append(cancelButton)
 
 def confirmSCDate():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1632,6 +1686,9 @@ def confirmSCDate():
     bList.append(cancelButton)
 
 def finalizeSCAppointment(cal, avail):
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     global currentDate
     currentDate = cal
 
@@ -1698,6 +1755,9 @@ def finalizeSCAppointment(cal, avail):
 
 
 def viewPatientAppointments():
+    w, h = window.winfo_screenwidth(), window.winfo_screenheight()
+    window.geometry("%dx%d+0+0" % (w, h))
+
     for i in range(0, len(bList)):
         forgetWidget(bList[i])
 
@@ -1722,18 +1782,25 @@ def viewPatientAppointments():
     cols = ("Appointment Number", "Date", "Time", "Patient Name", "Doctor Name", "Specialty", "Appointment Type", "Reason")
     appointTree = ttk.Treeview(window, columns=cols, show="headings", selectmode="extended")
     appointTree.heading("Appointment Number", text="Appointment Number", anchor=tkinter.CENTER)
+    appointTree.column("Appointment Number", minwidth=150, width=150)
     appointTree.heading("Date", text="Date", anchor=tkinter.CENTER)
+    appointTree.column("Date", minwidth=75, width=75)
     appointTree.heading("Time", text="Time", anchor=tkinter.CENTER)
     appointTree.heading("Patient Name", text="Patient Name", anchor=tkinter.CENTER)
+    appointTree.column("Patient Name", minwidth=150, width=150)
     appointTree.heading("Doctor Name", text="Doctor Name", anchor=tkinter.CENTER)
+    appointTree.column("Doctor Name", minwidth=150, width=150)
     appointTree.heading("Specialty", text="Specialty", anchor=tkinter.CENTER)
+    appointTree.column("Specialty", minwidth=100, width=100)
     appointTree.heading("Appointment Type", text="Appointment Type", anchor=tkinter.CENTER)
+    appointTree.column("Appointment Type", minwidth=150, width=150)
     appointTree.heading("Reason", text="Reason", anchor=tkinter.CENTER)
+    appointTree.column("Reason", minwidth=200, width=200)
     for appointment in appointments:
         for cal in calendars:
             for doc in doctors:
                 if str(appointment.getIDCalendar()) == str(cal.getIDCalendar()) and str(appointment.getIDDoctor()) == str(doc.getDoctorID()) and str(appointment.getPatientID()) == str(currentPatient.getPatientID()):
-                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(currentPatient.getName()), str(doc.getName()), str(doc.getSpecialty()), str(appointment.getType()), str(appointment.getReason())))
+                    appointTree.insert("", tkinter.END, values=(str(appointment.getIDAppointment()), (cal.getDate()), str(cal.getTime()), str(currentPatient.getName()), str(doc.getName()), str(doc.getSpecialty()), str(appointment.getType()), wrap(str(appointment.getReason()))))
     appointTree.grid(row=1, column=0, columnspan=2)
     tList.append(appointTree)
 
