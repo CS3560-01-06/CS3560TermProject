@@ -43,7 +43,6 @@ def mainWindow():
     settings.window.mainloop()
 
 
-
 def employeeLogin():
     w, h = settings.window.winfo_screenwidth(), settings.window.winfo_screenheight()
     settings.window.geometry("%dx%d+0+0" % (w, h))
@@ -807,8 +806,12 @@ def viewAppointments():
 def removeAppointment(tree, num):
     try:
         temp = tree.selection()[0]
+        temp2 = str(tree.item(temp)['values'][1])
+        dateTemp = datetime.strptime(temp2, '%Y-%m-%d')
 
-        try:
+        if(dateTemp < datetime.today()):
+            tkinter.messagebox.showerror("Error", "Appointment Already Passed")
+        else:
             answer = tkinter.messagebox.askyesno("Confirm?", "Remove the selected appointment?")
             global currentAvail
             global currentAppointment
@@ -845,8 +848,6 @@ def removeAppointment(tree, num):
                     doctorView()
                 else:
                     clerkView()
-        except datetime.strptime(str(tree.item(temp)['values'][1]), '%Y-%m-%m').date() < date.today():
-            tkinter.messagebox.showerror("Error", "Appointment Already Passed")
     except IndexError:
         tkinter.messagebox.showerror("Error", "No Selection Made")
 

@@ -31,9 +31,11 @@ def connectSQL():
     connector = mysql.connector.connect(host='127.0.0.1', user='nick', password='nd26',
                                         database='3560sql', auth_plugin='mysql_native_password')
 
+
 def closeSQL():
     if connector.is_connected():
         connector.close()
+
 
 def getPatients():
     selectAccount = "select * from Account"
@@ -92,6 +94,7 @@ def getEmployees():
 
     cursor.close()
 
+
 def getAvailability():
     selectAvail = "select * from Availability"
     cursor = connector.cursor()
@@ -102,6 +105,7 @@ def getAvailability():
         availability.append(Availability(row[0], row[1], row[2], row[3]))
 
     cursor.close()
+
 
 def getCalendar():
     selectCal = "select * from Calendar"
@@ -114,6 +118,7 @@ def getCalendar():
 
     cursor.close()
 
+
 def getAppointments():
     selectAvail = "select * from Appointment"
     cursor = connector.cursor()
@@ -124,6 +129,7 @@ def getAppointments():
         appointments.append(Appointment(row[0], row[1], row[2], row[3], row[4], row[5]))
 
     cursor.close()
+
 
 def updateLists():
     calendars.clear()
