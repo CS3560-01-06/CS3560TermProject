@@ -1,6 +1,6 @@
-
 class Account:
-    def __init__(self, name, age, gender, dateOfBirth, phoneNumber, username, password, emailAddress):
+    def __init__(self, accountID, name, age, gender, dateOfBirth, phoneNumber, username, password, emailAddress):
+        self.accountID = accountID
         self.name = name # string
         self.age = age # int
         self.gender = gender # string
@@ -10,5 +10,17 @@ class Account:
         self.password = password # string
         self.emailAddress = emailAddress # string
 
-    def login():
+    def login(self):
         return
+
+    def getUsername(self):
+        return self.username
+
+    def getPassword(self):
+        return self.password
+
+    def getName(self):
+        return self.name
+
+    def getEmail(self):
+        return self.emailAddress

@@ -1,9 +1,13 @@
-import Doctor
-
-class Calender(Doctor):
-    def __init__(self,callID,date):
-        self.callID = callID # int
+class Cal():
+    def __init__(self, idCalendar, date, time):
+        self.idCalendar = idCalendar # int
         self.date = date # int
+        self.time = time
+    def getIDCalendar(self):
+        return self.idCalendar
 
-    def listUpComingAppointments():
-        return
+    def getDate(self):
+        return self.date
+
+    def getTime(self):
+        return self.time
